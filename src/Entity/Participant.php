@@ -78,6 +78,11 @@ class Participant implements UserInterface
      */
     private $subscribedToEvents;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $userName;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -288,6 +293,13 @@ class Participant implements UserInterface
     public function removeSubscribedToEvent(Event $subscribedToEvent): self
     {
         $this->subscribedToEvents->removeElement($subscribedToEvent);
+
+        return $this;
+    }
+
+    public function setUserName(?string $userName): self
+    {
+        $this->userName = $userName;
 
         return $this;
     }
