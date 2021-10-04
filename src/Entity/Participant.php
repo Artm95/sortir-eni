@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class Participant implements UserInterface
 {
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -81,6 +82,7 @@ class Participant implements UserInterface
     {
         $this->events = new ArrayCollection();
         $this->subscribedToEvents = new ArrayCollection();
+        $this->isActive = true;
     }
 
     public function getId(): ?int
