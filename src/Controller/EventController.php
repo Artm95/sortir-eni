@@ -116,7 +116,7 @@ class EventController extends AbstractController {
         }
 
         if (in_array($event->getState()->getLabel(), ['Activitée en cours', 'Passée'])) {
-            $this->addFlash('danger', 'Il est impossible de se désinscrire d\'une sortie en cours.');
+            $this->addFlash('danger', 'Il est impossible de se désinscrire d\'une sortie en cours ou terminée.');
             return $this->redirectToRoute('event');
         }
 
