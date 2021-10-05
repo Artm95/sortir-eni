@@ -33,8 +33,8 @@ class EventRepository extends ServiceEntityRepository {
         if ($campus) {
             $query->addSelect('c')
                 ->join('e.campus', 'c')
-                ->andWhere('c.id = :campusId')
-                ->setParameter('campusId', $campus);
+                ->andWhere('c.id = :campus')
+                ->setParameter('campus', $campus);
         }
         if ($name) {
             $query->andWhere('e.name LIKE :name')
