@@ -149,4 +149,9 @@ class Location
 
         return $this;
     }
+
+    public function __toString(){
+        return $this->name . ", " . $this->street . ", " . $this->city->getName() . ", " . $this->city->getZipCode()
+            . ", lattitude : " . $this->latitude . ", longitude : " . $this->longitude;
+    }
 }
