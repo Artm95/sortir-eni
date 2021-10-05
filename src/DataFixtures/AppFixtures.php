@@ -77,7 +77,7 @@ class AppFixtures extends Fixture
             }
         }
 
-        $states = ['Ouverte', 'Clôturée', 'Activité en cours', 'Activité terminée', 'Annulée'];
+        $states = ['Ouverte', 'Clôturée', 'Activité en cours', 'Activité terminée', 'Annulée', 'Activité historisée'];
         foreach ($states as $state) {
             $newState = new State();
             $newState->setLabel($state);

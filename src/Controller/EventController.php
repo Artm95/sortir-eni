@@ -69,13 +69,12 @@ class EventController extends AbstractController {
 
         $user = $this->getUser();
         $event = $repository->find($id);
-        $event->getSignUpDeadline()->setTime(23, 59, 59);
 
         if ($event->getState()->getLabel() !== 'Ouverte') {
             $this->addFlash('danger', 'Les inscriptions à cette sortie ne sont pas ouvertes.');
             return $this->redirectToRoute('event');
         }
-        if ($event->getSignUpDeadline() < new \DateTime()) {
+        if ($event->getSignUpDeadline()->format('Y-m-d') < date('Y-m-d')) {
             $this->addFlash('danger', 'La date d\'inscription pour cette sortie est dépassée.');
             return $this->redirectToRoute('event');
         }
@@ -108,19 +107,13 @@ class EventController extends AbstractController {
 
         $user = $this->getUser();
         $event = $repository->find($id);
-        $event->getSignUpDeadline()->setTime(23, 59, 59);
 
         if (!$user->getSubscribedToEvents()->contains($event)) {
             $this->addFlash('warning', 'Vous n\'êtes pas inscrit à cette sortie.');
             return $this->redirectToRoute('event');
         }
 
-        if ($event->getSignUpDeadline() < new \DateTime()) {
-            $this->addFlash('danger', 'La date d\'inscription pour cette sortie est dépassée.');
-            return $this->redirectToRoute('event');
-        }
-
-        if (in_array($event->getState()->getLabel(), ['Activitée en cours', 'Passée'])) {
+        if (in_array($event->getState()->getLabel(), ['Activitée en cours', 'Activitée Terminé'])) {
             $this->addFlash('danger', 'Il est impossible de se désinscrire d\'une sortie en cours ou terminée.');
             return $this->redirectToRoute('event');
         }
