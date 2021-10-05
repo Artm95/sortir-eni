@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Details {{ event.name }}{% endblock %}
+
+{% block body %}
+    <div class="card m-auto">
+        <div class="banner">
+
+        </div>
+
+        <div class="card-body">
+            <h2 class="card-title mb-4">{{ event.name }}</h2>
+            <p class="mb-2"></p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .banner{
+            height: 200px;
+            background-image: url("{{ asset('images/default-event-details.jpg') }}");
+        }
+    </style>
+
+{% endblock %}
