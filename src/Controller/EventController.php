@@ -13,16 +13,26 @@ use Symfony\Component\Routing\Annotation\Route;
 class EventController extends AbstractController {
     #[Route('/', name: 'event')]
     public function index(Request $request, EventRepository $repository): Response {
-        $form = $this->createForm(SearchEventType::class, [
-            'action' => $this->generateUrl('event'),
-            'method' => 'GET',
-        ]);
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $form = $this->createForm(SearchEventType::class);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             $data = $form->getData();
-            $events = $repository->getAllWithOrganizer();
+
+            $events = $repository->search(
+                $data['campus'],
+                $data['name'],
+                $data['from'],
+                $data['to'],
+                $data['organized'],
+                $data['subscribed'],
+                $data['notSubscribed'],
+                $data['over'],
+                $this->getUser()
+            );
         } else {
             $events = $repository->getAllWithOrganizer();
         }
