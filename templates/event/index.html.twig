@@ -5,46 +5,50 @@
 {% block body %}
     <h2>Filtrer les sorties</h2>
     {{ form_start(searchForm) }}
-        <div class="row">
-            <div class="col col-s-12 col-m-6 col-l-4">
-                <div>
-                    {{ form_label(searchForm.campus) }}
-                    {{ form_widget(searchForm.campus) }}
-                </div>
-                <div>
-                    {{ form_label(searchForm.name) }}
-                    {{ form_widget(searchForm.name) }}
-                </div>
-                <div class="row">
+    <div class="row">
+        <div class="col col-s-12 col-m-6 col-l-4">
+            <div class="p-1">
+                {{ form_label(searchForm.campus) }}
+                {{ form_widget(searchForm.campus) }}
+            </div>
+            <div class="p-1">
+                {{ form_label(searchForm.name) }}
+                {{ form_widget(searchForm.name) }}
+            </div>
+            <div class="d-flex flex-row p-1">
+                <div class="pe-1">
                     {{ form_label(searchForm.from) }}
                     {{ form_widget(searchForm.from) }}
+                </div>
+                <div class="ps-1">
                     {{ form_label(searchForm.to) }}
                     {{ form_widget(searchForm.to) }}
                 </div>
             </div>
-            <div class="col col-s-12 col-m-6 col-l-4">
-                <div>
-                    {{ form_label(searchForm.organized) }}
-                    {{ form_widget(searchForm.organized) }}
-                </div>
-                <div>
-                    {{ form_label(searchForm.subscribed) }}
-                    {{ form_widget(searchForm.subscribed) }}
-                </div>
-                <div>
-                    {{ form_label(searchForm.notSubscribed) }}
-                    {{ form_widget(searchForm.notSubscribed) }}
-                </div>
-                <div>
-                    {{ form_label(searchForm.over) }}
-                    {{ form_widget(searchForm.over) }}
-                </div>
-            </div>
-            <div class="text-center">
-                <button type="submit" class="btn btn-sm btn-primary">Rechercher</button>
-            </div>
-
         </div>
+        <div class="col col-s-12 col-m-6 col-l-4">
+            <div>
+                {{ form_label(searchForm.organized) }}
+                {{ form_widget(searchForm.organized) }}
+            </div>
+            <div>
+                {{ form_label(searchForm.subscribed) }}
+                {{ form_widget(searchForm.subscribed) }}
+            </div>
+            <div>
+                {{ form_label(searchForm.notSubscribed) }}
+                {{ form_widget(searchForm.notSubscribed) }}
+            </div>
+            <div>
+                {{ form_label(searchForm.over) }}
+                {{ form_widget(searchForm.over) }}
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-sm btn-primary">Rechercher</button>
+        </div>
+
+    </div>
     {{ form_end(searchForm) }}
     <div>
         <table class="table table-responsive">
@@ -68,7 +72,7 @@
                     <td>{{ event.signUpDeadline|date('d/m/Y') }}</td>
                     <td>{{ event.participants.count() }}/{{ event.maxParticipants }}</td>
                     <td>{{ event.state.label }}</td>
-                    <td>{{ '0' }}</td>
+                    <td>{{ app.user.subscribedToEvents.contains(event) ? 'X' : '' }}</td>
                     <td>
                         {# <a href="{{ path('user_detail', { id : event.id }) }}"> #}
                         {{ event.organizer.userName ? event.organizer.userName : event.organizer.firstName+' '+event.organizer.lastName }}

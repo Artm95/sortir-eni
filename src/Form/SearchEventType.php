@@ -22,10 +22,12 @@ class SearchEventType extends AbstractType
             ])
             ->add('from', DateType::class, [
                 'label' => "Entre",
+                'widget' => 'single_text',
                 'required' => false
             ])
             ->add('to', DateType::class, [
                 'label' => "Et",
+                'widget' => 'single_text',
                 'required' => false
             ])
             ->add('campus', EntityType::class, [

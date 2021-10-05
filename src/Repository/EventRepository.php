@@ -12,10 +12,8 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Event[]    findAll()
  * @method Event[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class EventRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
+class EventRepository extends ServiceEntityRepository {
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Event::class);
     }
 
@@ -35,22 +33,36 @@ class EventRepository extends ServiceEntityRepository
         if ($campus) {
             $query->addSelect('c')
                 ->join('e.campus', 'c')
-                ->andWhere('c.id = :campusId');
+                ->andWhere('c.id = :campusId')
+                ->setParameter('campusId', $campus);
         }
-        if ($name) $query->andWhere('e.name LIKE :name');
-        if ($from) $query->andWhere('e.startDate >= :from');
-        if ($to) $query->andWhere('e.startDate <= :to');
-        if ($organized) $query->andWhere('e.organizer = :organizer');
-        if ($subscribed) $query->andWhere(':participant MEMBER OF e.participants');
-        if ($notSubscribed) $query->andWhere(':participant NOT MEMBER OF e.participants');
-
-        if ($campus) $query->setParameter('campusId', $campus);
-        if ($name) $query->setParameter('name', '%' . addcslashes($name, '%_') . '%');
-        if ($from) $query->setParameter('from', $from);
-        if ($to) $query->setParameter('to', $to);
-        if ($organized) $query->setParameter('organizer', $user);
-        if ($subscribed) $query->setParameter('participant', $user);
-        if ($notSubscribed) $query->setParameter('notParticipant', $user);
+        if ($name) {
+            $query->andWhere('e.name LIKE :name')
+                ->setParameter('name', '%' . addcslashes($name, '%_') . '%');;
+        }
+        if ($from) {
+            $query->andWhere('e.startDate >= :from')
+                ->setParameter('from', $from);
+        }
+        if ($to) {
+            $query->andWhere('e.startDate <= :to')
+                ->setParameter('to', $to->setTime(23, 59, 59));
+        }
+        if ($organized) {
+            $query->andWhere('e.organizer = :organizer')
+                ->setParameter('organizer', $user);
+        }
+        if ($subscribed) {
+            $query->andWhere(':participant MEMBER OF e.participants')
+                ->setParameter('participant', $user);
+        }
+        if ($notSubscribed) {
+            $query->andWhere(':notParticipant NOT MEMBER OF e.participants')
+                ->setParameter('notParticipant', $user);
+        }
+        if ($over) {
+            $query->andWhere('e.startDate < CURRENT_TIMESTAMP()');
+        }
 
         return $query->getQuery()->getResult();
     }
