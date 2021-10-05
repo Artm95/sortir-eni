@@ -23,7 +23,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $state = new State();
-        $state->setLabel("Créée");
+        $state->setLabel("En création");
         $manager->persist($state);
 
         $city = new City();
@@ -77,7 +77,7 @@ class AppFixtures extends Fixture
             }
         }
 
-        $states = ['Ouverte', 'Clôturée', 'Activité en cours', 'Passée', 'Annulée'];
+        $states = ['Ouverte', 'Clôturée', 'Activité en cours', 'Activité terminée', 'Annulée', 'Activité historisée'];
         foreach ($states as $state) {
             $newState = new State();
             $newState->setLabel($state);
