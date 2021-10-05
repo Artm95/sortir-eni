@@ -168,7 +168,8 @@ class Participant implements UserInterface
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->plainPassword = null;
+        $this->confirmation = null;
     }
 
     public function getFirstName(): ?string
@@ -302,5 +303,29 @@ class Participant implements UserInterface
         $this->userName = $userName;
 
         return $this;
+    }
+
+    private $plainPassword;
+
+    public function setPlainPassword(string $plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
+    }
+
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    private $confirmation;
+
+    public function setConfirmation(string $confirmation)
+    {
+        $this->confirmation = $confirmation;
+    }
+
+    public function getConfirmation()
+    {
+        return $this->confirmation;
     }
 }
