@@ -16,9 +16,18 @@ class SearchEventType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, ['required' => false])
-            ->add('from', DateType::class, ['required' => false])
-            ->add('to', DateType::class, ['required' => false])
+            ->add('name', TextType::class, [
+                'label' => "Nom contient",
+                'required' => false
+            ])
+            ->add('from', DateType::class, [
+                'label' => "Entre",
+                'required' => false
+            ])
+            ->add('to', DateType::class, [
+                'label' => "Et",
+                'required' => false
+            ])
             ->add('campus', EntityType::class, [
                 'class' => Campus::class,
                 'choice_label' => 'name',
@@ -46,7 +55,7 @@ class SearchEventType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            // Configure your form options here
+            'method' => 'GET'
         ]);
     }
 }

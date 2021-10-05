@@ -28,36 +28,30 @@ class EventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function search($campus, $name, $from, $to, $organized, $subscribed, $notSubscribed, $over) {
+    public function search($campus, $name, $from, $to, $organized, $subscribed, $notSubscribed, $over, $user) {
         $query = $this->createQueryBuilder('e')
             ->addSelect('o')
             ->join('e.organizer', 'o');
         if ($campus) {
             $query->addSelect('c')
                 ->join('e.campus', 'c')
-                ->where('c.id = :campusId')
-                ->setParameter('campusId', $campus);
+                ->andWhere('c.id = :campusId');
         }
-        if ($name) {
-            $query->where('e.name LIKE :name')
-                ->setParameter('val', '%' . addcslashes($name, '%_') . '%');
-        }
-        if ($from) {
-            $query->where('e.startDate >= :from')
-                ->setParameter('from', $from);
-        }
-        if ($to) {
-            $query->where('e.startDate <= :to')
-                ->setParameter('to', $to);
-        }
-        if ($organized) {
-            $query->where('e.organizer = :organizer')
-                ->setParameter(':organizer', $from); //TODO: retrieve user from session for the parameter value
-        }
-        if ($from) {
-            $query->where('e.startDate >= :from')
-                ->setParameter('from', $from);
-        }
+        if ($name) $query->andWhere('e.name LIKE :name');
+        if ($from) $query->andWhere('e.startDate >= :from');
+        if ($to) $query->andWhere('e.startDate <= :to');
+        if ($organized) $query->andWhere('e.organizer = :organizer');
+        if ($subscribed) $query->andWhere(':participant MEMBER OF e.participants');
+        if ($notSubscribed) $query->andWhere(':participant NOT MEMBER OF e.participants');
+
+        if ($campus) $query->setParameter('campusId', $campus);
+        if ($name) $query->setParameter('name', '%' . addcslashes($name, '%_') . '%');
+        if ($from) $query->setParameter('from', $from);
+        if ($to) $query->setParameter('to', $to);
+        if ($organized) $query->setParameter('organizer', $user);
+        if ($subscribed) $query->setParameter('participant', $user);
+        if ($notSubscribed) $query->setParameter('notParticipant', $user);
+
         return $query->getQuery()->getResult();
     }
 
