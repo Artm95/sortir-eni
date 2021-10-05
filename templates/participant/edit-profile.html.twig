@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+{% form_theme userForm 'bootstrap_4_layout.html.twig' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block body %}
+    
+    <h1>{{title}}</h1>
+    <div class="form">
+    {{ form_start(userForm)}}
+    {{ form_widget(userForm)}}
+    <button type="submit" class="btn btn-primary">Envoyer</button>
+    <a href="#" class="btn btn-primary">Annuler</a>
+    {{ form_end(userForm)}}
+    </div>
+    
+{% endblock %}
