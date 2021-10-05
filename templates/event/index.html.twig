@@ -87,9 +87,8 @@
                     <td>
                         <a href="{{ path('event_detail', { id : event.id }) }}">Afficher</a>
                         {% if event.organizer.id is same as(app.user.id) %}
-                            {% if event.state.label is same as('Créée') %}
+                            {% if event.state.label is same as('En création') %}
                                 <p>publier</p>
-                            {% else %}
                                 <p>modifier</p>
                             {% endif %}
                         {% else %}

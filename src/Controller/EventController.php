@@ -125,4 +125,8 @@ class EventController extends AbstractController {
         $this->addFlash('success', 'Désinscription à la sortie '.$event->getName().' validé.');
         return $this->redirectToRoute('event');
     }
+
+    private function updateEventsState() {
+
+    }
 }
