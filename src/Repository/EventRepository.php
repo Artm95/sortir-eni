@@ -67,6 +67,17 @@ class EventRepository extends ServiceEntityRepository {
         return $query->getQuery()->getResult();
     }
 
+    public function statesUpdate() {
+        $monthAgo = date_sub(new \DateTime(), new \DateInterval('P1M'));
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.startDate <= :monthAgo')
+            ->setParameter('monthAgo', $monthAgo)
+            ->andWhere('e.startDate LIKE :now')
+            ->setParameter('')
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return Event[] Returns an array of Event objects
     //  */
