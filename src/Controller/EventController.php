@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Event;
 use App\Form\SearchEventType;
 use App\Repository\EventRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,5 +57,74 @@ class EventController extends AbstractController {
         return $this->render('event/detail.html.twig', [
             'event' => $event
         ]);
+    }
+
+    #[Route(
+        path: '/inscription-sortie/{id}',
+        name: 'event_subscribe',
+        requirements: ['id' => '\d+']
+    )]
+    public function subscribeTo(int $id, EventRepository $repository, EntityManagerInterface $manager): Response {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $user = $this->getUser();
+        $event = $repository->find($id);
+        $event->getSignUpDeadline()->setTime(23, 59, 59);
+
+        if ($event->getState()->getLabel() !== 'Ouverte') {
+            $this->addFlash('danger', 'Les inscriptions à cette sortie ne sont pas ouvertes.');
+            return $this->redirectToRoute('event');
+        }
+        if ($event->getSignUpDeadline() < new \DateTime()) {
+            $this->addFlash('danger', 'La date d\'inscription pour cette sortie est dépassée.');
+            return $this->redirectToRoute('event');
+        }
+
+        if ($user->getSubscribedToEvents()->contains($event)) {
+            $this->addFlash('warning', 'Vous êtes déjà inscrit à cette sortie.');
+            return $this->redirectToRoute('event');
+        }
+
+        if ($event->getOrganizer()->getId() === $user->getId()) {
+            $this->addFlash('warning', 'Vous ne pouvez pas vous inscrire à une sortie dont vous êtes l\'organisateur.');
+            return $this->redirectToRoute('event');
+        }
+
+        $user->addSubscribedToEvent($event);
+        $manager->persist($user);
+        $manager->flush();
+
+        $this->addFlash('success', 'Inscription à la sortie '.$event->getName().' validé.');
+        return $this->redirectToRoute('event');
+    }
+
+    #[Route(
+        path: '/desistement-sortie/{id}',
+        name: 'event_unsubscribe',
+        requirements: ['id' => '\d+']
+    )]
+    public function unsubscribeTo(int $id, EventRepository $repository, EntityManagerInterface $manager): Response {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $user = $this->getUser();
+        $event = $repository->find($id);
+        $event->getSignUpDeadline()->setTime(23, 59, 59);
+
+        if (!$user->getSubscribedToEvents()->contains($event)) {
+            $this->addFlash('warning', 'Vous n\'êtes pas inscrit à cette sortie.');
+            return $this->redirectToRoute('event');
+        }
+
+        if (in_array($event->getState()->getLabel(), ['Activitée en cours', 'Passée'])) {
+            $this->addFlash('danger', 'Il est impossible de se désinscrire d\'une sortie en cours.');
+            return $this->redirectToRoute('event');
+        }
+
+        $user->removeSubscribedToEvent($event);
+        $manager->persist($user);
+        $manager->flush();
+
+        $this->addFlash('success', 'Désinscription à la sortie '.$event->getName().' validé.');
+        return $this->redirectToRoute('event');
     }
 }

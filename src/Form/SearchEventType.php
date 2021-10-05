@@ -17,7 +17,7 @@ class SearchEventType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => "Nom contient",
+                'label' => 'Nom',
                 'required' => false
             ])
             ->add('from', DateType::class, [
