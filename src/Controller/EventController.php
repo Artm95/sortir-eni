@@ -21,7 +21,7 @@ class EventController extends AbstractController {
 
         if ($form->isSubmitted()) {
             $data = $form->getData();
-
+            
             $events = $repository->search(
                 $data['campus'],
                 $data['name'],
