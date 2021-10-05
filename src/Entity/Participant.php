@@ -330,12 +330,12 @@ class Participant implements UserInterface
         return $this->confirmation;
     }
 
-    public function isOrganizer(Event $event) : Boolean
+    public function isOrganizer(Event $event) : bool
     {
         return $this->events->contains($event);
     }
 
-    public function isParticipant(Event $event) : Boolean
+    public function isParticipant(Event $event) : bool
     {
         return $this->subscribedToEvents->contains($event);
     }
