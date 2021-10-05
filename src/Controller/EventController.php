@@ -115,6 +115,11 @@ class EventController extends AbstractController {
             return $this->redirectToRoute('event');
         }
 
+        if ($event->getSignUpDeadline() < new \DateTime()) {
+            $this->addFlash('danger', 'La date d\'inscription pour cette sortie est dépassée.');
+            return $this->redirectToRoute('event');
+        }
+
         if (in_array($event->getState()->getLabel(), ['Activitée en cours', 'Passée'])) {
             $this->addFlash('danger', 'Il est impossible de se désinscrire d\'une sortie en cours ou terminée.');
             return $this->redirectToRoute('event');
