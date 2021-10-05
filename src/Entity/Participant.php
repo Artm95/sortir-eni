@@ -79,11 +79,6 @@ class Participant implements UserInterface
      */
     private $subscribedToEvents;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $userName;
-
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -320,6 +315,16 @@ class Participant implements UserInterface
 
     private $confirmation;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $photo;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $nickname;
+
     public function setConfirmation(string $confirmation)
     {
         $this->confirmation = $confirmation;
@@ -338,5 +343,29 @@ class Participant implements UserInterface
     public function isParticipant(Event $event) : bool
     {
         return $this->subscribedToEvents->contains($event);
+    }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): self
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(?string $nickname): self
+    {
+        $this->nickname = $nickname;
+
+        return $this;
     }
 }

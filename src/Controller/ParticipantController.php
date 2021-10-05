@@ -44,4 +44,9 @@ class ParticipantController extends AbstractController
             'title' => 'Mon profil'
         ]);
     }
+
+    #[Route('/profile/{id}', name: 'participant_profile', requirements: ['id' => '\d+'])]
+    public function showProfile(){
+
+    }
 }
