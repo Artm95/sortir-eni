@@ -72,7 +72,7 @@
                     <td>{{ event.signUpDeadline|date('d/m/Y') }}</td>
                     <td>{{ event.participants.count() }}/{{ event.maxParticipants }}</td>
                     <td>{{ event.state.label }}</td>
-                    <td>{{ app.user.subscribedToEvents.contains(event) ? 'X' : '' }}</td>
+                    <td>{{ app.user.isParticipant(event) ? 'X' : '' }}</td>
                     <td>
                         {# <a href="{{ path('user_detail', { id : event.id }) }}"> #}
                         {{ event.organizer.userName ? event.organizer.userName : event.organizer.firstName+' '+event.organizer.lastName }}

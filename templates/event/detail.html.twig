@@ -11,9 +11,9 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-6"><h2 class="card-title mb-4">{{ event.name }}</h2></div>
-                {% if isOrganizer %}
+                {% if app.user.isOrganizer(event) %}
                     <div class="col-6 text-right"><button type="button" class="btn btn-warning">Modifier</button></div>
-                {% elseif isParticipant %}
+                {% elseif app.user.isParticipant(event) %}
                     <div class="col-6 text-right"><button type="button" class="btn btn-danger">Se désister</button></div>
                 {% else %}
                     <div class="col-6 text-right"><button type="button" class="btn btn-success">S'inscrire</button></div>

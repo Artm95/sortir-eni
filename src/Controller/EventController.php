@@ -50,32 +50,11 @@ class EventController extends AbstractController {
     )]
     public function detail(int $id, EventRepository $repository): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-        $isUserOrganizer = false;
-        $isUserParticipant = false;
-        $user = $this->getUser();
 
         $event = $repository->find($id);
 
-        $organizer = $event->getOrganizer();
-        $participants = $event->getParticipants();
-
-        foreach($participants as $participant){
-            if ($participant->getId() === $user->getId()){
-                $isUserParticipant = true;
-                break;
-            }
-        }
-
-        if ($user->getId() === $organizer->getId()){
-            $isUserOrganizer = true;
-        }
-
-
-
         return $this->render('event/detail.html.twig', [
-            'event' => $event,
-            'isOrganizer' => $isUserOrganizer,
-            'isParticipant' => $isUserParticipant
+            'event' => $event
         ]);
     }
 }

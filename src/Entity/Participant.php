@@ -6,6 +6,7 @@ use App\Repository\ParticipantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Boolean;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -327,5 +328,15 @@ class Participant implements UserInterface
     public function getConfirmation()
     {
         return $this->confirmation;
+    }
+
+    public function isOrganizer(Event $event) : Boolean
+    {
+        return $this->events->contains($event);
+    }
+
+    public function isParticipant(Event $event) : Boolean
+    {
+        return $this->subscribedToEvents->contains($event);
     }
 }
