@@ -77,6 +77,10 @@ class EventController extends AbstractController {
             $this->addFlash('danger', 'Les inscriptions à cette sortie ne sont pas ouvertes.');
             return $this->redirectToRoute('event');
         }
+        if ($event->getParticipants()->count() >= $event->getMaxParticipants()) {
+            $this->addFlash('danger', 'Le nombre maximum de participants est déjà atteint.');
+            return $this->redirectToRoute('event');
+        }
         if ($event->getSignUpDeadline()->format('Y-m-d') < date('Y-m-d')) {
             $this->addFlash('danger', 'La date d\'inscription pour cette sortie est dépassée.');
             return $this->redirectToRoute('event');
@@ -126,6 +130,38 @@ class EventController extends AbstractController {
         $manager->flush();
 
         $this->addFlash('success', 'Désinscription à la sortie '.$event->getName().' validé.');
+        return $this->redirectToRoute('event');
+    }
+
+    #[Route(
+        path: '/publication-sortie/{id}',
+        name: 'event_publish',
+        requirements: ['id' => '\d+']
+    )]
+    public function publishEvent(int $id, EntityManagerInterface $manager): Response {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $eventRepository = $manager->getRepository(Event::class);
+        $stateRepository = $manager->getRepository(State::class);
+        $user = $this->getUser();
+        $event = $eventRepository->find($id);
+        $openState = $stateRepository->findBy(['label' => 'Ouverte'])[0];
+
+        if ($user->getId() !== $event->getOrganizer()->getId()) {
+            $this->addFlash('danger', 'Vous n\'êtes pas l\'organisateur de cette sortie.');
+            return $this->redirectToRoute('event');
+        }
+
+        if ($event->getState()->getId() === $openState->getId()) {
+            $this->addFlash('warning', 'La sortie '.$event->getName().' est déjà publié.');
+            return $this->redirectToRoute('event');
+        }
+
+        $event->setState($openState);
+        $manager->persist($event);
+        $manager->flush();
+
+        $this->addFlash('success', 'Sortie '.$event->getName().' publié.');
         return $this->redirectToRoute('event');
     }
 
