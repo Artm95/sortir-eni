@@ -1,11 +1,16 @@
+
+table {
+    color: white!important;
+    background-color: rgba(0, 0, 0, 0.3);
+}
 .search-form .input-label {
     font-size: 12px;
 }
 
 .banner {
     height: 600px;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url("../images/home-banner.jpg");
-    background-size: cover;
+
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -43,9 +48,9 @@
 
 .search-form ul.ks-cboxtags li label {
     display: inline-block;
-    background-color: rgba(255, 255, 255, .9);
-    border: 2px solid rgba(139, 139, 139, .3);
-    color: #adadad;
+    background-color: rgb(255, 255, 255);
+    border: 2px solid rgb(139, 139, 139);
+    color: #000;
     border-radius: 25px;
     white-space: nowrap;
     margin: 3px 0px;
@@ -120,7 +125,11 @@
     color: #b00311;
 }
 #show-btn{
-    color: #16000f;
+    color: #fff;
+}
+
+#organizer-link{
+    color: #e0e0e0;
 }
 table td{
     vertical-align:middle!important;

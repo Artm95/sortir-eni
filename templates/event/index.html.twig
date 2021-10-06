@@ -126,7 +126,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ path('user_detail', { id : event.organizer.id }) }}" class="text-secondary">
+                            <a href="{{ path('user_detail', { id : event.organizer.id }) }}" id="organizer-link">
                                 {{ event.organizer.nickname ? event.organizer.nickname : event.organizer.firstName ~ ' ' ~ event.organizer.lastName }}
                             </a>
                         </td>

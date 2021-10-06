@@ -3,7 +3,7 @@
 {% block title %}Profil de {{ user.nickname ?:  user.firstName ~ " " ~ user.lastName }}{% endblock %}
 
 {% block body %}
-    <div class="card ">
+    <div class="card">
 
         <div class="row">
             <div class="col-4">
@@ -40,6 +40,6 @@
                 </div>
             </div>
         </div>
-        <a href="{{path("event")}} " class="btn btn-primary">Retour à l'accueil</a>
+        <a href="{{path("event")}} " class="btn btn-dark">Retour à l'accueil</a>
     </div>
 {% endblock %}
