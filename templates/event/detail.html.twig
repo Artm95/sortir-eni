@@ -13,10 +13,10 @@
                 <div class="col-6"><h2 class="card-title mb-4">{{ event.name }}</h2></div>
                 {% if app.user.isOrganizer(event) %}
                     <div class="col-6 text-right"><button type="button" class="btn btn-warning">Modifier</button></div>
-                {% elseif app.user.isParticipant(event) %}
-                    <div class="col-6 text-right"><button type="button" class="btn btn-danger">Se désister</button></div>
-                {% elseif event.participants.count() < event.maxParticipants and date(event.signUpDeadline) >= date() %}
-                    <div class="col-6 text-right"><button type="button" class="btn btn-success">S'inscrire</button></div>
+                {% elseif app.user.isParticipant(event) and event.state.label is same as('Ouverte') %}
+                    <div class="col-6 text-right"><a href="{{ path('event_unsubscribe', { id : event.id}) }}" type="button" class="btn btn-danger">Se désister</a></div>
+                {% elseif event.state.label is same as('Ouverte') and event.participants.count() < event.maxParticipants and date(event.signUpDeadline) >= date() %}
+                    <div class="col-6 text-right"><a href="{{ path('event_subscribe', { id : event.id}) }}" type="button" class="btn btn-success">S'inscrire</a></div>
                 {% endif %}
             </div>
             <p class="mb-4">{{ event.infos }}</p>
