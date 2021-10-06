@@ -32,9 +32,9 @@
             {% if event.participants.count > 0%}
             <p> Participants : </p>
                 <ul>
-                    {% for participant in participants %}
+                    {% for participant in event.participants %}
                         <li>
-                            {{ participant.firstName + " " + participant.lastName }}
+                            {{ participant.firstName ~ " " ~ participant.lastName }}
                         </li>
                     {% endfor %}
 
