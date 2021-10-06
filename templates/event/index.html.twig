@@ -136,7 +136,7 @@
                                 {% if event.organizer.id is same as(app.user.id) %}
                                     {% if event.state.label is same as('En création') %}
                                         <a href="{{ path('event_publish', { id : event.id}) }}" id="publish-btn"><i class="fas fa-check-circle"></i> Publier</a>
-                                        <a href="#" id="edit-btn"><i class="far fa-edit"></i> Modifier</a>
+                                        <a href="{{ path('event_edit', { id : event.id }) }}" id="edit-btn"><i class="far fa-edit"></i> Modifier</a>
                                     {% endif %}
                                 {% else %}
                                     {% if event.state.label is same as('Ouverte') %}
