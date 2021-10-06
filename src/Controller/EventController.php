@@ -77,6 +77,10 @@ class EventController extends AbstractController {
             $this->addFlash('danger', 'Les inscriptions à cette sortie ne sont pas ouvertes.');
             return $this->redirectToRoute('event');
         }
+        if ($event->getParticipants()->count() >= $event->getMaxParticipants()) {
+            $this->addFlash('danger', 'Le nombre maximum de participants est déjà atteint.');
+            return $this->redirectToRoute('event');
+        }
         if ($event->getSignUpDeadline()->format('Y-m-d') < date('Y-m-d')) {
             $this->addFlash('danger', 'La date d\'inscription pour cette sortie est dépassée.');
             return $this->redirectToRoute('event');
