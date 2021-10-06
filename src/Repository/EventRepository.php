@@ -20,8 +20,9 @@ class EventRepository extends ServiceEntityRepository {
     public function getAllWithOrganizer() {
         return $this->createQueryBuilder('e')
             ->addSelect('o')
+            ->addSelect('s')
             ->join('e.organizer', 'o')
-            ->addOrderBy('e.startDate', 'ASC')
+            ->join('e.state', 's')
             ->getQuery()
             ->getResult();
     }
@@ -29,7 +30,9 @@ class EventRepository extends ServiceEntityRepository {
     public function search($campus, $name, $from, $to, $organized, $subscribed, $notSubscribed, $over, $user) {
         $query = $this->createQueryBuilder('e')
             ->addSelect('o')
-            ->join('e.organizer', 'o');
+            ->addSelect('s')
+            ->join('e.organizer', 'o')
+            ->join('e.state', 's');
         if ($campus) {
             $query->addSelect('c')
                 ->join('e.campus', 'c')
@@ -68,12 +71,35 @@ class EventRepository extends ServiceEntityRepository {
     }
 
     public function statesUpdate() {
+        $em = $this->getEntityManager();
+        $expr = $em->getExpressionBuilder();
+
         $monthAgo = date_sub(new \DateTime(), new \DateInterval('P1M'));
+        $monthOldQuery = $this->createQueryBuilder('e1')
+            ->innerJoin('e1.state', 's1')
+            ->andWhere('e1.startDate <= :monthAgo')
+            ->andWhere("s1.label != 'Activité historisée'")
+            ->getDQL();
+        $closeDeadLine = $this->createQueryBuilder('e2')
+            ->innerJoin('e2.state', 's2')
+            ->andWhere('e2.signUpDeadline <= CURRENT_DATE()')
+            ->andWhere('s2.label = :label')
+            ->getDQL();
+        $currentQuery = $this->createQueryBuilder('e3')
+            ->innerJoin('e3.state', 's3')
+            ->andWhere('e3.startDate <= CURRENT_TIMESTAMP()')
+            ->andWhere('s3.label NOT IN (:labels)')
+            ->getDQL();
+
         return $this->createQueryBuilder('e')
-            ->andWhere('e.startDate <= :monthAgo')
+            ->addSelect('s')
+            ->join('e.state', 's')
+            ->andWhere($expr->in('e.id', $monthOldQuery))
+            ->orWhere($expr->in('e.id', $currentQuery))
+            ->orWhere($expr->in('e.id', $closeDeadLine))
             ->setParameter('monthAgo', $monthAgo)
-            ->andWhere('e.startDate LIKE :now')
-            ->setParameter('')
+            ->setParameter('label', 'Ouverte')
+            ->setParameter('labels', ['Activité historisée', 'Annulée', 'Activité terminée'])
             ->getQuery()
             ->getResult();
     }
