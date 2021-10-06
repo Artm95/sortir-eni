@@ -17,6 +17,7 @@ class ParticipantController extends AbstractController
     #[Route('/edit-profile', name: 'participant_edit')]
     public function edit(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user = $this->getUser();
 
         $form = $this->createForm(ProfileType::class, $user);

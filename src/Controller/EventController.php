@@ -3,10 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Location;
 use App\Entity\State;
+use App\Form\CityChoiceType;
+use App\Form\EventType;
+use App\Form\LocationType;
 use App\Form\SearchEventType;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Error;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -214,5 +219,41 @@ class EventController extends AbstractController {
             }
         }
         $manager->flush();
+    }
+
+    #[Route(path: '/create', name: 'event_new')]
+    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $stateRepository = $entityManager->getRepository(State::class);
+        $states = $stateRepository->findAll();
+
+        $event = new Event();
+        $user = $this->getUser();
+        $event->setCampus($user->getCampus());
+        $event->setOrganizer($user);
+
+        $eventForm = $this->createForm(EventType::class, $event);
+        $eventForm->handleRequest($request);
+
+        if ($eventForm->isSubmitted() && $eventForm->isValid()) {
+            $event = $eventForm->getData();
+            $data = $request->request->get('send');
+            $state = array_values(array_filter($states, function ($element) use ($data) {
+                return $element->getLabel() === $data;
+            }));
+            $event->setState($state[0]);
+            $entityManager->persist($event);
+            $entityManager->flush();
+            $this->addFlash('success', 'Vous avez créé une sortie ! Yahoo !!');
+            return $this->redirectToRoute('event');
+        }
+
+        return $this->render('event/new-event.html.twig', [
+            'controller_name' => 'EventController',
+            'eventForm' => $eventForm->createView(),
+            'title' => 'Créer une sortie'
+        ]);
     }
 }
