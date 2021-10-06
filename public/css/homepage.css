@@ -1,0 +1,127 @@
+.search-form .input-label {
+    font-size: 12px;
+}
+
+.banner {
+    height: 600px;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url("../images/home-banner.jpg");
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.search-form {
+    max-width: 80%;
+}
+
+.card {
+    border-radius: 2rem;
+}
+
+.submit-btn{
+    border-radius: 1rem;
+}
+
+.greetings {
+    color: white;
+}
+
+.search-form input, .search-form select {
+    border-radius: 2.5rem;
+}
+
+.search-form ul.ks-cboxtags {
+    list-style: none;
+    padding: 20px;
+}
+
+.search-form ul.ks-cboxtags li {
+    display: inline;
+}
+
+.search-form ul.ks-cboxtags li label {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, .9);
+    border: 2px solid rgba(139, 139, 139, .3);
+    color: #adadad;
+    border-radius: 25px;
+    white-space: nowrap;
+    margin: 3px 0px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all .2s;
+}
+
+.search-form ul.ks-cboxtags li label {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.search-form ul.ks-cboxtags li label::before {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 12px;
+    padding: 2px 6px 2px 2px;
+    content: "\f067";
+    transition: transform .3s ease-in-out;
+}
+
+.search-form ul.ks-cboxtags li input[type="checkbox"]:checked + label::before {
+    content: "\f00c";
+    transform: rotate(-360deg);
+    transition: transform .3s ease-in-out;
+}
+
+.search-form ul.ks-cboxtags li input[type="checkbox"]:checked + label {
+    border: 2px solid #1bdbf8;
+    background-color: #12bbd4;
+    color: #fff;
+    transition: all .2s;
+}
+
+.search-form ul {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.search-form ul.ks-cboxtags li input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.search-form ul.ks-cboxtags li input[type="checkbox"]:focus + label {
+    border: 2px solid #f8c81b;
+}
+
+#publish-btn{
+    color: #2c5701;
+}
+
+#edit-btn{
+    color: #f8c81b;
+}
+
+#subscribe-btn{
+    color: #0b7cb0;
+}
+
+#unsubscribe-btn{
+    color: #b00311;
+}
+#show-btn{
+    color: #16000f;
+}
+table td{
+    vertical-align:middle!important;
+}

@@ -1,109 +1,161 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Sorties{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/homepage.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h2>Filtrer les sorties</h2>
-    {{ form_start(searchForm) }}
-    <div class="row">
-        <div class="col-sm-12 col-md-6">
-            <div class="d-flex flex-row p-1">
-                {{ form_label(searchForm.campus) }}
-                {{ form_widget(searchForm.campus) }}
-            </div>
-            <div class="d-flex flex-row p-1">
-                {{ form_label(searchForm.name) }}
-                {{ form_widget(searchForm.name) }}
-            </div>
-            <div class="d-flex flex-row p-1">
-                <div class="d-flex flex-row pr-1">
-                    {{ form_label(searchForm.from) }}
-                    {{ form_widget(searchForm.from) }}
-                </div>
-                <div class="d-flex flex-row pl-1">
-                    {{ form_label(searchForm.to) }}
-                    {{ form_widget(searchForm.to) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-12 col-md-6">
-            <div>
-                {{ form_label(searchForm.organized) }}
-                {{ form_widget(searchForm.organized) }}
-            </div>
-            <div>
-                {{ form_label(searchForm.subscribed) }}
-                {{ form_widget(searchForm.subscribed) }}
-            </div>
-            <div>
-                {{ form_label(searchForm.notSubscribed) }}
-                {{ form_widget(searchForm.notSubscribed) }}
-            </div>
-            <div>
-                {{ form_label(searchForm.over) }}
-                {{ form_widget(searchForm.over) }}
-            </div>
-        </div>
-    </div>
-    <div class="text-center">
-        <button type="submit" class="btn btn-sm btn-primary">Rechercher</button>
-    </div>
-    {{ form_end(searchForm) }}
     {% for label, messages in app.flashes(['success', 'danger', 'warning']) %}
         {% for message in messages %}
             <div class="text-center bg-{{ label }}">
-               {{ message }}
+                {{ message }}
             </div>
         {% endfor %}
     {% endfor %}
-    <div>
-        <table class="table table-responsive">
-            <thead>
-            <tr>
-                <th>Nom de la sortie</th>
-                <th>Date de la sortie</th>
-                <th>Clôture</th>
-                <th>inscrits/places</th>
-                <th>Etat</th>
-                <th>Inscrit</th>
-                <th>Organisateur</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for event in events %}
+    <div class="banner">
+        <div class="search-form">
+            <div class="greetings">
+                {% if app.user %}
+                    <h3>Salut {{ app.user.firstName }} !</h3>
+                {% endif %}
+                <p>Où est-ce qu'on va aller ?</p>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5>Filtrer les sorties</h5>
+                    {{ form_start(searchForm) }}
+                    <div class="row">
+                        <div class="col col-lg-3">
+                            <div class="d-flex flex-column flex-row p-1">
+                                <div class="input-label">
+                                    <i class="fas fa-map-marker-alt mr-1 text-primary"></i> {{ form_label(searchForm.campus) }}
+                                </div>
+                                {{ form_widget(searchForm.campus, { value: app.user.campus.id|trans}) }}
+                            </div>
+                        </div>
+                        <div class="col col-lg-3">
+                            <div class="d-flex flex-column p-1">
+                                <div class="input-label">
+                                    <i class="fas fa-bullseye mr-1 text-primary"></i>
+                                    {{ form_label(searchForm.name) }}
+                                </div>
+
+                                {{ form_widget(searchForm.name) }}
+                            </div>
+                        </div>
+                        <div class="col col-lg-3">
+                            <div class="d-flex flex-column pr-1">
+                                <div class="input-label">
+                                    <i class="far fa-calendar-alt mr-1 text-primary"></i>
+                                    {{ form_label(searchForm.from) }}
+                                </div>
+
+                                {{ form_widget(searchForm.from) }}
+                            </div>
+
+                        </div>
+                        <div class="col col-lg-3">
+                            <div class="d-flex flex-column pl-1">
+                                <div class="input-label">
+                                    <i class="far fa-calendar-alt mr-1 text-primary"></i>
+                                    {{ form_label(searchForm.to) }}
+                                </div>
+
+                                {{ form_widget(searchForm.to) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <ul class="ks-cboxtags">
+                                <li>{{ form_widget(searchForm.organized) }}
+                                    {{ form_label(searchForm.organized) }}
+                                </li>
+                                <li>
+                                    {{ form_label(searchForm.subscribed) }}
+                                    {{ form_widget(searchForm.subscribed) }}
+                                </li>
+                                <li>
+                                    {{ form_label(searchForm.notSubscribed) }}
+                                    {{ form_widget(searchForm.notSubscribed) }}
+                                </li>
+                                <li>
+                                    {{ form_label(searchForm.over) }}
+                                    {{ form_widget(searchForm.over) }}
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-sm btn-primary submit-btn"><i class="fas fa-search"></i> Rechercher</button>
+                    </div>
+                    {{ form_end(searchForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 row justify-content-center">
+        <div class="col-auto">
+            <table class="table text-center table-responsive">
+                <thead>
                 <tr>
-                    <td>{{ event.name }}</td>
-                    <td>{{ event.startDate|date('d/m/Y') }}</td>
-                    <td>{{ event.signUpDeadline|date('d/m/Y') }}</td>
-                    <td>{{ event.participants.count() }}/{{ event.maxParticipants }}</td>
-                    <td>{{ event.state.label }}</td>
-                    <td>{{ app.user.isParticipant(event) ? 'X' : '' }}</td>
-                    <td>
-                         <a href="{{ path('user_detail', { id : event.organizer.id }) }}">
-                        {{ event.organizer.nickname ? event.organizer.nickname : event.organizer.firstName ~ ' ' ~ event.organizer.lastName }}
-                         </a>
-                    </td>
-                    <td>
-                        <a href="{{ path('event_detail', { id : event.id }) }}">Afficher</a>
-                        {% if event.organizer.id is same as(app.user.id) %}
-                            {% if event.state.label is same as('En création') %}
-                                <p>publier</p>
-                                <p>modifier</p>
-                            {% endif %}
-                        {% else %}
-                            {% if event.state.label is same as('Ouverte') %}
-                                {% if app.user.subscribedToEvents.contains(event) %}
-                                    <a href="{{ path('event_unsubscribe', { id : event.id}) }}">Se désister</a>
-                                {% elseif event.participants.count() < event.maxParticipants and date(event.signUpDeadline) >= date() %}
-                                    <a href="{{ path('event_subscribe', { id : event.id}) }}">S'inscrire</a>
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-                    </td>
+                    <th>Nom de la sortie</th>
+                    <th>Date de la sortie</th>
+                    <th>Clôture</th>
+                    <th>Inscrits/places</th>
+                    <th>Etat</th>
+                    <th>Inscrit</th>
+                    <th>Organisateur</th>
+                    <th>Actions</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td class="font-weight-bold">{{ event.name }}</td>
+                        <td>{{ event.startDate|date('d/m/Y') }}</td>
+                        <td>{{ event.signUpDeadline|date('d/m/Y') }}</td>
+                        <td>{{ event.participants.count() }}/{{ event.maxParticipants }}</td>
+                        <td><span class="badge badge-info">{{ event.state.label }}</span></td>
+                        <td>
+                            {%if app.user.isParticipant(event) %}
+                                <i class="fas fa-check text-success"></i>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('user_detail', { id : event.organizer.id }) }}" class="text-secondary">
+                                {{ event.organizer.nickname ? event.organizer.nickname : event.organizer.firstName ~ ' ' ~ event.organizer.lastName }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <a href="{{ path('event_detail', { id : event.id }) }}" id="show-btn"><i class="fas fa-eye"></i> Afficher</a>
+                                {% if event.organizer.id is same as(app.user.id) %}
+                                    {% if event.state.label is same as('En création') %}
+                                        <a href="#" id="publish-btn"><i class="fas fa-check-circle"></i> Publier</a>
+                                        <a href="#" id="edit-btn"><i class="far fa-edit"></i> Modifier</a>
+                                    {% endif %}
+                                {% else %}
+                                    {% if event.state.label is same as('Ouverte') %}
+                                        {% if app.user.subscribedToEvents.contains(event) %}
+                                            <a href="{{ path('event_unsubscribe', { id : event.id}) }}" id="unsubscribe-btn"><i class="far fa-times-circle"></i> Se désister</a>
+                                        {% elseif event.participants.count() < event.maxParticipants and date(event.signUpDeadline) >= date() %}
+                                            <a href="{{ path('event_subscribe', { id : event.id}) }}" id="subscribe-btn"><i class="far fa-calendar-plus"></i> S'inscrire</a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
+
+

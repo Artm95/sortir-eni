@@ -33,7 +33,9 @@ class SearchEventType extends AbstractType
             ->add('campus', EntityType::class, [
                 'class' => Campus::class,
                 'choice_label' => 'name',
-                'required' => false
+                'required' => false,
+                'placeholder' => 'Tous les campus',
+
             ])
             ->add('organized', CheckboxType::class, [
                 'label' => "Sorties dont je suis l'organisteur/trice",
