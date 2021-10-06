@@ -80,9 +80,9 @@
                     <td>{{ event.state.label }}</td>
                     <td>{{ app.user.isParticipant(event) ? 'X' : '' }}</td>
                     <td>
-                        {# <a href="{{ path('user_detail', { id : event.id }) }}"> #}
-                        {{ event.organizer.userName ? event.organizer.userName : event.organizer.firstName+' '+event.organizer.lastName }}
-                        {# </a> #}
+                         <a href="{{ path('user_detail', { id : event.organizer.id }) }}">
+                        {{ event.organizer.nickname ? event.organizer.nickname : event.organizer.firstName ~ ' ' ~ event.organizer.lastName }}
+                         </a>
                     </td>
                     <td>
                         <a href="{{ path('event_detail', { id : event.id }) }}">Afficher</a>

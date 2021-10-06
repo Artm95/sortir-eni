@@ -17,25 +17,48 @@ class ProfileType extends AbstractType
     {
         $builder
             ->add('nickname', TextType::class, [
+                // 'label_attr' => [
+                //     'class' => '`checkbox-inline'
+                // ],
                 'label' => 'Pseudo'
             ])
             ->add('firstName', TextType::class, [
+                // 'label_attr' => [
+                //     'class' => '`checkbox-inline'
+                // ],
                 'label' => 'Prénom'
             ])
             ->add('lastName', TextType::class, [
+                // 'label_attr' => [
+                //     'class' => '`checkbox-inline'
+                // ],
                 'label' => 'Nom'
             ])
             ->add('phoneNumber', TextType::class, [
+                // 'label_attr' => [
+                //     'class' => '`checkbox-inline'
+                // ],
                 'label' => 'Téléphone'
             ])
             ->add('email', TextType::class, [
+                // 'label_attr' => [
+                //     'class' => '`checkbox-inline'
+                // ],
                 'label' => 'Email'
             ])
             ->add('plainPassword', PasswordType::class, [
+                // 'mapped' => false,
+                // 'label_attr' => [
+                //     'class' => '`checkbox-inline'
+                // ],
                 'label' => 'Mot de passe',
                 'required' => false
             ])
             ->add('confirmation', PasswordType::class, [
+                // 'mapped' => false,
+                // 'label_attr' => [
+                //     'class' => '`checkbox-inline'
+                // ],
                 'label' => 'Confirmation',
                 'required' => false
             ])
@@ -43,7 +66,15 @@ class ProfileType extends AbstractType
                 'class' => Campus::class,
                 'choice_label' => 'name',
                 'label' => 'Campus'
-            ]);;
+                // 'choice_value' => 'id'
+            ])
+            ->add('avatar', FileType::class, [
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new Image()
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
