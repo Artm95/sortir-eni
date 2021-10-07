@@ -104,6 +104,14 @@ class EventController extends AbstractController {
 
         $user->addSubscribedToEvent($event);
         $manager->persist($user);
+
+        if ($event->getParticipants()->count() === $event->getMaxParticipants() - 1) {
+            $stateRepository = $manager->getRepository(State::class);
+            $closedState = $stateRepository->findBy(['label' => 'CLôturée'])[0];
+            $event->setState($closedState);
+            $manager->persist($event);
+        }
+
         $manager->flush();
 
         $this->addFlash('success', 'Inscription à la sortie '.$event->getName().' validé.');
@@ -126,13 +134,19 @@ class EventController extends AbstractController {
             return $this->redirectToRoute('event');
         }
 
-        if (in_array($event->getState()->getLabel(), ['Activitée en cours', 'Activitée terminée', 'Activité historisée'])) {
+        if (!in_array($event->getState()->getLabel(), ['Ouverte', 'Clôturée'])) {
             $this->addFlash('danger', 'Il est impossible de se désinscrire d\'une sortie en cours ou terminée.');
             return $this->redirectToRoute('event');
         }
 
         $user->removeSubscribedToEvent($event);
         $manager->persist($user);
+        if ($event->getParticipants()->count() === $event->getMaxParticipants() && $event->getSignUpDeadline()->format('Y-m-d') >= date('Y-m-d')) {
+            $stateRepository = $manager->getRepository(State::class);
+            $openState = $stateRepository->findBy(['label' => 'Ouverte'])[0];
+            $event->setState($openState);
+            $manager->persist($event);
+        }
         $manager->flush();
 
         $this->addFlash('success', 'Désinscription à la sortie '.$event->getName().' validé.');
@@ -158,7 +172,7 @@ class EventController extends AbstractController {
             return $this->redirectToRoute('event');
         }
 
-        if ($event->getState()->getId() === $openState->getId()) {
+        if ($event->getState()->getLabel() !== 'En création') {
             $this->addFlash('warning', 'La sortie '.$event->getName().' est déjà publié.');
             return $this->redirectToRoute('event');
         }

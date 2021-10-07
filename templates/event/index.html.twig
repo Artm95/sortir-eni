@@ -89,7 +89,9 @@
                         </div>
                     </div>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-sm btn-primary submit-btn"><i class="fas fa-search"></i> Rechercher</button>
+                        <button type="submit" class="btn btn-sm btn-primary submit-btn"><i class="fas fa-search"></i>
+                            Rechercher
+                        </button>
                     </div>
                     {{ form_end(searchForm) }}
                 </div>
@@ -121,7 +123,7 @@
                         <td>{{ event.participants.count() }}/{{ event.maxParticipants }}</td>
                         <td><span class="badge badge-info">{{ event.state.label }}</span></td>
                         <td>
-                            {%if app.user.isParticipant(event) %}
+                            {% if app.user.isParticipant(event) %}
                                 <i class="fas fa-check text-success"></i>
                             {% endif %}
                         </td>
@@ -132,7 +134,8 @@
                         </td>
                         <td>
                             <div class="d-flex flex-column">
-                                <a href="{{ path('event_detail', { id : event.id }) }}" id="show-btn"><i class="fas fa-eye"></i> Afficher</a>
+                                <a href="{{ path('event_detail', { id : event.id }) }}" id="show-btn"><i
+                                            class="fas fa-eye"></i> Afficher</a>
                                 {% if event.organizer.id is same as(app.user.id) %}
                                     {% if event.state.label is same as('En création') %}
                                         <a href="{{ path('event_publish', { id : event.id}) }}" id="publish-btn"><i class="fas fa-check-circle"></i> Publier</a>
@@ -141,10 +144,15 @@
                                 {% else %}
                                     {% if event.state.label is same as('Ouverte') %}
                                         {% if app.user.subscribedToEvents.contains(event) %}
-                                            <a href="{{ path('event_unsubscribe', { id : event.id}) }}" id="unsubscribe-btn"><i class="far fa-times-circle"></i> Se désister</a>
+                                            <a href="{{ path('event_unsubscribe', { id : event.id}) }}"
+                                               id="unsubscribe-btn"><i class="far fa-times-circle"></i> Se désister</a>
                                         {% elseif event.participants.count() < event.maxParticipants and date(event.signUpDeadline) >= date() %}
-                                            <a href="{{ path('event_subscribe', { id : event.id}) }}" id="subscribe-btn"><i class="far fa-calendar-plus"></i> S'inscrire</a>
+                                            <a href="{{ path('event_subscribe', { id : event.id}) }}"
+                                               id="subscribe-btn"><i class="far fa-calendar-plus"></i> S'inscrire</a>
                                         {% endif %}
+                                    {% elseif event.state.label is same as('Clôturée') and app.user.subscribedToEvents.contains(event) %}
+                                        <a href="{{ path('event_unsubscribe', { id : event.id}) }}"
+                                           id="unsubscribe-btn"><i class="far fa-times-circle"></i> Se désister</a>
                                     {% endif %}
                                 {% endif %}
                             </div>
@@ -157,7 +165,7 @@
         </div>
     </div>
     <div class="d-flex justify-content-center">
-        <a href="{{path('event_new')}}" class="btn btn-primary mt-3 mb-3">Créer une sortie</a>
+        <a href="{{ path('event_new') }}" class="btn btn-primary mt-3 mb-3">Créer une sortie</a>
     </div>
 {% endblock %}
 
