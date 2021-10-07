@@ -24,10 +24,10 @@ class Event
     /**
      * @ORM\Column(type="string", length=255)
      */
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
     #[Assert\Length(
-        min: 3,
-        max: 50,
+        min: 10,
+        max: 15,
         minMessage: 'Le nom doit faire au moins {{ limit }} caractères',
         maxMessage: 'Le nom ne peut pas être plus long que {{ limit }} caractères',
     )]
