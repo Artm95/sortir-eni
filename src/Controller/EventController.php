@@ -10,6 +10,7 @@ use App\Form\EventType;
 use App\Form\LocationType;
 use App\Form\SearchEventType;
 use App\Repository\EventRepository;
+use App\Utils\UploaderHelper;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
