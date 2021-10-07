@@ -143,11 +143,13 @@ class EventRepository extends ServiceEntityRepository {
 
     /**
      * @param $id
+     * @return Event
      * @throws EntityNotFoundException
      */
     public function findOrFail($id){
         $event = $this->find($id);
         if ($event === null) throw new EntityNotFoundException("La sortie demandé n'existe pas");
+        return $event;
     }
 
     // /**

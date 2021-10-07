@@ -64,6 +64,7 @@ class ParticipantController extends AbstractController
     public function showProfile(int $id, ParticipantRepository $repository){
         try {
             $user = $repository->findOrFail($id);
+
             return $this->render('participant/show-profile.html.twig', [
                 'user' => $user
             ]);
