@@ -27,6 +27,25 @@ class EventRepository extends ServiceEntityRepository {
             ->getResult();
     }
 
+    public function getAllEventDataById($id){
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.id = :id')
+            ->setParameter('id', $id)
+            ->addSelect('organizer')
+            ->addSelect('state')
+            ->addSelect('location')
+            ->addSelect('city')
+            ->addSelect('campus')
+            ->join('e.organizer', 'organizer')
+            ->join('e.state', 'state')
+            ->join('e.location', 'location')
+            ->join('location.city', 'city')
+            ->join('e.campus', 'campus')
+            ->leftJoin('e.participants', 'participants')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function search($campus, $name, $from, $to, $organized, $subscribed, $notSubscribed, $over, $user) {
         $query = $this->createQueryBuilder('e')
             ->addSelect('o')

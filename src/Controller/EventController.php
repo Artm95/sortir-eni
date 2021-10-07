@@ -57,7 +57,7 @@ class EventController extends AbstractController {
         requirements: ['id' => '\d+']
     )]
     public function detail(int $id, EventRepository $repository): Response {
-        $event = $repository->find($id);
+        $event = $repository->getAllEventDataById($id);
 
         return $this->render('event/detail.html.twig', [
             'event' => $event
@@ -259,7 +259,7 @@ class EventController extends AbstractController {
     )]
     public function edit($id, EventRepository $repository, Request $request){
         $user = $this->getUser();
-        $event = $repository->find($id);
+        $event = $repository->getAllEventDataById($id);
 
         if ($user->isOrganizer($event) && $event->getState()->getLabel() === "En création" ){
             $eventForm = $this->createForm(EventType::class, $event);
