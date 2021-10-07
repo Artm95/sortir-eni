@@ -28,8 +28,7 @@ class ParticipantController extends AbstractController
             $user = $form->getData();
             $photo = $form["avatar"]->getData();
             $newPass = $user->getPlainPassword();
-            $confirmation = $user->getConfirmation();
-            if ($newPass !== null && $confirmation !== null && $newPass == $confirmation) {
+            if ($newPass !== null) {
                 $user->setPassword($passwordEncoder->encodePassword(
                     $user,
                     $user->getPlainPassword()

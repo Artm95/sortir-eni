@@ -6,8 +6,8 @@ use App\Repository\ParticipantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\Types\Boolean;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ParticipantRepository::class)
@@ -25,6 +25,10 @@ class Participant implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      */
+    #[Assert\NotBlank(message: 'L\'email est obligatoire')]
+    #[Assert\Email(
+        message: 'L\'email n\'est pas valide.',
+    )]
     private $email;
 
     /**
@@ -36,21 +40,49 @@ class Participant implements UserInterface
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
+    /*
+    #[Assert\NotBlank(message: 'Le mot de passe est obligatoire')]
+    #[Assert\Regex(
+        pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$',
+        message: 'Le mot de passe doit faire au moins 8 caractères et contenir au moins une lettre et un nombre'
+    )]
+    */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Assert\NotBlank(message: 'Le prénom est obligatoire')]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: 'Le prénom doit faire au moins {{ limit }} caractères',
+        maxMessage: 'Le prénom ne peut pas être plus long que {{ limit }} caractères',
+    )]
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: 'Le nom doit faire au moins {{ limit }} caractères',
+        maxMessage: 'Le nom ne peut pas être plus long que {{ limit }} caractères',
+    )]
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=15)
      */
+    /*
+    #[Assert\NotBlank(message: 'Le numéro de téléphone est obligatoire')]
+    #[Assert\Regex(
+        pattern: '^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$',
+        message: 'Le numéro de téléphone doit suivre un des formats suivant : +33 X XX XX XX XX / XX XX XX XX XX / 0033 X XX XX XX XX'
+    )]
+    */
     private $phoneNumber;
 
     /**
@@ -67,6 +99,7 @@ class Participant implements UserInterface
      * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="participants")
      * @ORM\JoinColumn(nullable=false)
      */
+    #[Assert\NotBlank(message: 'Le campus est obligatoire')]
     private $campus;
 
     /**
@@ -313,8 +346,6 @@ class Participant implements UserInterface
         return $this->plainPassword;
     }
 
-    private $confirmation;
-
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
@@ -324,16 +355,6 @@ class Participant implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $nickname;
-
-    public function setConfirmation(string $confirmation)
-    {
-        $this->confirmation = $confirmation;
-    }
-
-    public function getConfirmation()
-    {
-        return $this->confirmation;
-    }
 
     public function isOrganizer(Event $event) : bool
     {

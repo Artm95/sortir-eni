@@ -13,8 +13,15 @@ class SearchEvent {
     #[Assert\Type('string')]
     public ?string $name = null;
 
+
+    #[Assert\Type(DateTime::class)]
     public ?DateTime $from = null;
 
+    #[Assert\Type(\DateTime::class)]
+    #[Assert\GreaterThanOrEqual(
+        propertyPath: 'from',
+        message: 'Valeur incorrect'
+    )]
     public ?DateTime $to = null;
 
     #[Assert\Type('bool')]
@@ -51,9 +58,9 @@ class SearchEvent {
     }
 
     /**
-     * @param DateTime $from
+     * @param DateTime|null $from
      */
-    public function setFrom(DateTime $from): void {
+    public function setFrom(?DateTime $from = null): void {
         $this->from = $from;
     }
 
@@ -65,9 +72,9 @@ class SearchEvent {
     }
 
     /**
-     * @param DateTime $to
+     * @param DateTime|null $to
      */
-    public function setTo(DateTime $to): void {
+    public function setTo(?DateTime $to = null): void {
         $this->to = $to;
     }
 
