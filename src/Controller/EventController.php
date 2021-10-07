@@ -104,13 +104,13 @@ class EventController extends AbstractController
                 return $this->redirectToRoute('event');
             }
 
-            if ($event->getOrganizer()->getId() === $user->getId()) {
-                $this->addFlash(
-                    'warning',
-                    'Vous ne pouvez pas vous inscrire à une sortie dont vous êtes l\'organisateur.'
-                );
-                return $this->redirectToRoute('event');
-            }
+            // if ($event->getOrganizer()->getId() === $user->getId()) {
+            //     $this->addFlash(
+            //         'warning',
+            //         'Vous ne pouvez pas vous inscrire à une sortie dont vous êtes l\'organisateur.'
+            //     );
+            //     return $this->redirectToRoute('event');
+            // }
 
             $user->addSubscribedToEvent($event);
             $manager->persist($user);
@@ -123,7 +123,6 @@ class EventController extends AbstractController
             }
 
             $manager->flush();
-
             $this->addFlash('success', 'Inscription à la sortie ' . $event->getName() . ' validé.');
             return $this->redirectToRoute('event');
         } catch (EntityNotFoundException $e) {
@@ -195,9 +194,9 @@ class EventController extends AbstractController
             $event->setState($openState);
             $manager->persist($event);
             $manager->flush();
-
+            $id = $event->getId();
             $this->addFlash('success', 'Sortie ' . $event->getName() . ' publié.');
-            return $this->redirectToRoute('event');
+            return $this->redirectToRoute('event_subscribe', ['id' => $id]);
         } catch (EntityNotFoundException $e) {
             return $this->addFlashAndRedirectToHome($e->getMessage());
         }
@@ -217,10 +216,13 @@ class EventController extends AbstractController
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
             $event = $eventForm->getData();
             $state = $request->request->get('send');
-            $this->saveEvent($event, $state);
-
             $this->addFlash('success', 'Vous avez créé une sortie ! Yahoo !!');
-            return $this->redirectToRoute('event');
+            $id = $this->saveEvent($event, $state)->getId();
+            if ($state === 'Ouverte') {
+                return $this->redirectToRoute('event_subscribe', ['id' => $id]);
+            } else {
+                return $this->redirectToRoute('event');
+            }
         }
 
         return $this->render(
