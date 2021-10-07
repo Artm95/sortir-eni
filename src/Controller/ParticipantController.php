@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Form\ProfileType;
 use App\Repository\ParticipantRepository;
+use App\Utils\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,7 @@ class ParticipantController extends AbstractController
 {
 
     #[Route('/edit-profile', name: 'participant_edit')]
-    public function edit(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, UploaderHelper $uploaderHelper): Response
     {
         $user = $this->getUser();
 
@@ -39,13 +40,12 @@ class ParticipantController extends AbstractController
                 $destination = $this->getParameter('kernel.project_dir') . '/public/uploads';
                 if ($user->getPhoto()){
                     //we delete the previous avater
-                    unlink($destination . '/' . $user->getPhoto());
+                    $uploaderHelper->deleteUploadedFile($destination . '/' . $user->getPhoto());
                 }
                 //we create a unique file name based on user id
-                $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-                $fileName = $originalFilename . '-' .$user->getId() .'.'. $photo->guessExtension();
+                $fileName = $uploaderHelper->uploadPhoto($photo, $destination);
                 $user->setPhoto($fileName);
-                $photo->move($destination, $fileName);
+
             }
             $entityManager->persist($user);
             $entityManager->flush();
