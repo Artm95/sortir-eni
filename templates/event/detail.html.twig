@@ -1,7 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Details {{ event.name }}{% endblock %}
-{% set isOrganizer = app.user.isOrganizer(event) %}
+{% set user = app.user %}
+{% set isOrganizer = event.organizer.id is same as(user.id) %}
+{% set isParticipant = event.participants.contains(user)%}
 {% set state = event.state.label %}
 
 {% block body %}
@@ -16,7 +18,7 @@
                     <div class="col-6"><h2 class="card-title mb-4">{{ event.name }}</h2></div>
                     {% if isOrganizer and state is same as("En création") %}
                         <div class="col-6 text-right"><a href="{{ path('event_edit', { id : event.id}) }}" type="button" class="btn btn-warning">Modifier</a></div>
-                    {% elseif app.user.isParticipant(event) and state is same as('Ouverte') %}
+                    {% elseif isParticipant and state is same as('Ouverte') %}
                         <div class="col-6 text-right"><a href="{{ path('event_unsubscribe', { id : event.id}) }}" type="button" class="btn btn-danger">Se désister</a></div>
                     {% elseif not isOrganizer and state is same as('Ouverte') and event.participants.count() < event.maxParticipants and date(event.signUpDeadline) >= date() %}
                         <div class="col-6 text-right"><a href="{{ path('event_subscribe', { id : event.id}) }}" type="button" class="btn btn-success">S'inscrire</a></div>
