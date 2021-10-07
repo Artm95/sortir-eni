@@ -134,3 +134,48 @@ table {
 table td{
     vertical-align:middle!important;
 }
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+
+
+}
+
+@media (max-width: 768px)  {
+    .search-form {
+        max-width: 90%;
+    }
+
+    .navbar{
+        background-color: #000!important;
+    }
+
+    .search-form ul li label{
+        font-size: 14px;
+    }
+    #create-btn{
+        display: none;
+    }
+
+}
+
+@media (max-width: 426px)  {
+    .search-form {
+        max-width: 98%;
+    }
+
+
+    .search-form ul.ks-cboxtags, .search-form ul li, .search-form ul li .form-check {
+        padding: 0;
+    }
+
+
+
+    .search-form ul li label{
+        font-size: 12px;
+    }
+
+    .search-form ul.ks-cboxtags li label{
+        padding: 2px;
+    }
+
+}

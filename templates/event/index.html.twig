@@ -16,17 +16,25 @@
     <div class="banner">
         <div class="search-form">
             <div class="greetings">
-                {% if app.user %}
-                    <h3>Salut {{ app.user.firstName }} !</h3>
-                {% endif %}
-                <p>Où est-ce qu'on va aller ?</p>
+                <div class="row">
+                    <div class="col-12 col-md-8">
+                        {% if app.user %}
+                            <h3>Salut {{ app.user.firstName }} !</h3>
+                        {% endif %}
+                        <p>Où est-ce qu'on va aller ?</p>
+                    </div>
+                    <div class="col-4 text-right" id="create-btn">
+                        <a href="{{ path('event_new') }}" class="btn btn-primary mt-3 mb-3"><i class="fas fa-plus-circle mr-2"></i>Créer une sortie</a>
+                    </div>
+                </div>
+
             </div>
             <div class="card">
                 <div class="card-body">
                     <h5>Filtrer les sorties</h5>
                     {{ form_start(searchForm) }}
                     <div class="row">
-                        <div class="col col-lg-3">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <div class="d-flex flex-column flex-row p-1">
                                 <div class="input-label">
                                     <i class="fas fa-map-marker-alt mr-1 text-primary"></i> {{ form_label(searchForm.campus) }}
@@ -34,7 +42,7 @@
                                 {{ form_widget(searchForm.campus, { value: app.user.campus.id|trans}) }}
                             </div>
                         </div>
-                        <div class="col col-lg-3">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <div class="d-flex flex-column p-1">
                                 <div class="input-label">
                                     <i class="fas fa-bullseye mr-1 text-primary"></i>
@@ -44,7 +52,7 @@
                                 {{ form_widget(searchForm.name) }}
                             </div>
                         </div>
-                        <div class="col col-lg-3">
+                        <div class="col-12 col-md-6 col-lg-3 mb-2">
                             <div class="d-flex flex-column pr-1">
                                 <div class="input-label">
                                     <i class="far fa-calendar-alt mr-1 text-primary"></i>
@@ -55,7 +63,7 @@
                             </div>
 
                         </div>
-                        <div class="col col-lg-3">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <div class="d-flex flex-column pl-1">
                                 <div class="input-label">
                                     <i class="far fa-calendar-alt mr-1 text-primary"></i>
@@ -67,7 +75,7 @@
                         </div>
                     </div>
                     <div class="row mt-2">
-                        <div class="col">
+                        <div class="col-12">
                             <ul class="ks-cboxtags">
                                 <li>{{ form_widget(searchForm.organized) }}
                                     {{ form_label(searchForm.organized) }}
@@ -164,9 +172,7 @@
             </table>
         </div>
     </div>
-    <div class="d-flex justify-content-center">
-        <a href="{{ path('event_new') }}" class="btn btn-primary mt-3 mb-3">Créer une sortie</a>
-    </div>
+
 {% endblock %}
 
 

@@ -8,18 +8,16 @@
     <h1>{{title}}</h1>
 
     <div class="row">
-        <div class="col col-md-5">
-            <div style="height: 250px; width: 400px">
+        <div class="col-12 col-md-5">
+            <div style="height: 250px; max-width: 400px" class="text-center">
                 {% if userPhoto %}
-
                     <img style="max-width: 100%; max-height: 100%" src="{{ asset('uploads/'~userPhoto) }}" alt="user avatar">
                 {% else %}
                     <img style="max-width: 100%; max-height: 100%" src="{{ asset('images/default-avatar.png') }}" alt="user avatar">
                 {% endif %}
             </div>
         </div>
-        <div class="col col-md-7">
-            <h1>{{title}}</h1>
+        <div class="col-12 col-md-7">
             <div class="form">
                 {{ form_start(userForm)}}
                 {{ form_widget(userForm)}}
