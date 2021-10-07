@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Form\SearchEvent;
 use App\Entity\Location;
 use App\Entity\State;
 use App\Form\CityChoiceType;
@@ -10,6 +11,7 @@ use App\Form\EventType;
 use App\Form\LocationType;
 use App\Form\SearchEventType;
 use App\Repository\EventRepository;
+use App\Utils\StateUpdater;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
@@ -20,27 +22,19 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EventController extends AbstractController {
     #[Route('/', name: 'event')]
-    public function index(Request $request, EventRepository $repository, EntityManagerInterface $manager): Response {
+    public function index(Request $request, EventRepository $repository, EntityManagerInterface $manager, StateUpdater $updater): Response {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $this->updateEventsState($manager);
+        $updater->updateEventsState($manager);
 
-        $form = $this->createForm(SearchEventType::class);
-
+        $searchEvent = new SearchEvent();
+        $form = $this->createForm(SearchEventType::class, $searchEvent);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $data = $form->getData();
-            
+            $searchEvent = $form->getData();
             $events = $repository->search(
-                $data['campus'],
-                $data['name'],
-                $data['from'],
-                $data['to'],
-                $data['organized'],
-                $data['subscribed'],
-                $data['notSubscribed'],
-                $data['over'],
+                $searchEvent,
                 $this->getUser()
             );
         } else {
@@ -183,57 +177,6 @@ class EventController extends AbstractController {
 
         $this->addFlash('success', 'Sortie '.$event->getName().' publié.');
         return $this->redirectToRoute('event');
-    }
-
-    private function updateEventsState(EntityManagerInterface $manager) {
-        $eventRepository = $manager->getRepository(Event::class);
-        $stateRepository = $manager->getRepository(State::class);
-
-        $events = $eventRepository->statesUpdate();
-        $states = $stateRepository->findAll();
-
-        $archived = array_values(array_filter($states, function($element) {
-            return $element->getLabel() === 'Activité historisée';
-        }));
-        $ongoing = array_values(array_filter($states, function($element) {
-            return $element->getLabel() === 'Activité en cours';
-        }));
-        $deadLine = array_values(array_filter($states, function($element) {
-            return $element->getLabel() === 'Clôturée';
-        }));
-        $over = array_values(array_filter($states, function($element) {
-            return $element->getLabel() === 'Activité terminée';
-        }));
-
-
-        $monthAgo = date_sub(new \DateTime(), new \DateInterval('P1M'))->format('Y-m-d');
-        $now = new \DateTime();
-        $today = $now->format('Y-m-d');
-
-        foreach($events as $event) {
-            if ($event->getStartDate()->format('Y-m-d') <= $monthAgo) {
-                $event->setState($archived[0]);
-                $manager->persist($event);
-                continue;
-            }
-            if ($event->getStartDate()->format('Y-m-d') <= $today) {
-                if ($event->getStartDate() <= $now) {
-                    $eventEnd = date_add($event->getStartDate(), new \DateInterval('PT'.$event->getDuration().'M'));
-                    if ($eventEnd < $now) {
-                        $event->setState($over[0]);
-                    } else {
-                        $event->setState($ongoing[0]);
-                    }
-                    $manager->persist($event);
-                    continue;
-                }
-            }
-            if ($event->getSignUpDeadline()->format('Y-m-d') < $today) {
-                $event->setState($deadLine[0]);
-                $manager->persist($event);
-            }
-        }
-        $manager->flush();
     }
 
     #[Route(path: '/create', name: 'event_new')]
