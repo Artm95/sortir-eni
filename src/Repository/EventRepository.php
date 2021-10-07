@@ -40,6 +40,7 @@ class EventRepository extends ServiceEntityRepository {
             ->addSelect('location')
             ->addSelect('city')
             ->addSelect('campus')
+            ->addSelect('participants')
             ->join('e.organizer', 'organizer')
             ->join('e.state', 'state')
             ->join('e.location', 'location')
@@ -50,7 +51,7 @@ class EventRepository extends ServiceEntityRepository {
             ->getOneOrNullResult();
     }
 
-    public function search($campus, $name, $from, $to, $organized, $subscribed, $notSubscribed, $over, $user) {
+    public function search($searchEvent, $user) {
         $query = $this->createQueryBuilder('e')
             ->addSelect('o')
             ->addSelect('s')
