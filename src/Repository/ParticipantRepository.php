@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Participant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -34,6 +35,15 @@ class ParticipantRepository extends ServiceEntityRepository implements PasswordU
         $user->setPassword($newHashedPassword);
         $this->_em->persist($user);
         $this->_em->flush();
+    }
+
+    /**
+     * @param $id
+     * @throws EntityNotFoundException
+     */
+    public function findOrFail($id){
+        $participant = $this->find($id);
+        if ($participant===null) throw new EntityNotFoundException("L'utilisateur demnadé n'existe pas");
     }
 
     // /**

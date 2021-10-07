@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\Event;
 use App\Entity\Participant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -31,24 +34,33 @@ class EventRepository extends ServiceEntityRepository {
             ->getResult();
     }
 
+    /**
+     * @param $id
+     * @return Event
+     * @throws EntityNotFoundException
+     */
     public function getAllEventDataById($id){
-        return $this->createQueryBuilder('e')
-            ->andWhere('e.id = :id')
-            ->setParameter('id', $id)
-            ->addSelect('organizer')
-            ->addSelect('state')
-            ->addSelect('location')
-            ->addSelect('city')
-            ->addSelect('campus')
-            ->addSelect('participants')
-            ->join('e.organizer', 'organizer')
-            ->join('e.state', 'state')
-            ->join('e.location', 'location')
-            ->join('location.city', 'city')
-            ->join('e.campus', 'campus')
-            ->leftJoin('e.participants', 'participants')
-            ->getQuery()
-            ->getOneOrNullResult();
+        try {
+            return $this->createQueryBuilder('e')
+                ->andWhere('e.id = :id')
+                ->setParameter('id', $id)
+                ->addSelect('organizer')
+                ->addSelect('state')
+                ->addSelect('location')
+                ->addSelect('city')
+                ->addSelect('campus')
+                ->addSelect('participants')
+                ->join('e.organizer', 'organizer')
+                ->join('e.state', 'state')
+                ->join('e.location', 'location')
+                ->join('location.city', 'city')
+                ->join('e.campus', 'campus')
+                ->leftJoin('e.participants', 'participants')
+                ->getQuery()
+                ->getSingleResult();
+        } catch (NoResultException|NonUniqueResultException $e) {
+            throw new EntityNotFoundException("La sortie demandée n'existe pas", 404);
+        }
     }
 
     public function search($searchEvent, $user) {
@@ -127,6 +139,15 @@ class EventRepository extends ServiceEntityRepository {
             ->setParameter('labels', ['Activité historisée', 'Annulée', 'Activité terminée'])
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param $id
+     * @throws EntityNotFoundException
+     */
+    public function findOrFail($id){
+        $event = $this->find($id);
+        if ($event === null) throw new EntityNotFoundException("La sortie demandé n'existe pas");
     }
 
     // /**

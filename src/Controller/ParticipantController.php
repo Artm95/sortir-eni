@@ -6,6 +6,7 @@ use App\Form\ProfileType;
 use App\Repository\ParticipantRepository;
 use App\Utils\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -61,11 +62,14 @@ class ParticipantController extends AbstractController
 
     #[Route('/profile/{id}', name: 'user_detail', requirements: ['id' => '\d+'])]
     public function showProfile(int $id, ParticipantRepository $repository){
-        $user = $repository->find($id);
-
-        return $this->render('participant/show-profile.html.twig', [
-            'user' => $user
-        ]);
-
+        try {
+            $user = $repository->findOrFail($id);
+            return $this->render('participant/show-profile.html.twig', [
+                'user' => $user
+            ]);
+        } catch (EntityNotFoundException $e) {
+            $this->addFlash('danger', "Le profil demandé n'existe pas");
+            return $this->redirectToRoute('event');
+        }
     }
 }
