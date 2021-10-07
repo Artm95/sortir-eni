@@ -26,8 +26,8 @@ class Event
      */
     #[Assert\NotBlank(message: 'Le nom est obligatoire')]
     #[Assert\Length(
-        min: 10,
-        max: 15,
+        min: 3,
+        max: 50,
         minMessage: 'Le nom doit faire au moins {{ limit }} caractères',
         maxMessage: 'Le nom ne peut pas être plus long que {{ limit }} caractères',
     )]
