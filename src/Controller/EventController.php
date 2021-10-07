@@ -21,8 +21,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class EventController extends AbstractController {
     #[Route('/', name: 'event')]
     public function index(Request $request, EventRepository $repository, EntityManagerInterface $manager): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         $this->updateEventsState($manager);
 
         $form = $this->createForm(SearchEventType::class);
@@ -59,8 +57,6 @@ class EventController extends AbstractController {
         requirements: ['id' => '\d+']
     )]
     public function detail(int $id, EventRepository $repository): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         $event = $repository->find($id);
 
         return $this->render('event/detail.html.twig', [
@@ -74,8 +70,6 @@ class EventController extends AbstractController {
         requirements: ['id' => '\d+']
     )]
     public function subscribeTo(int $id, EventRepository $repository, EntityManagerInterface $manager): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         $user = $this->getUser();
         $event = $repository->find($id);
 
@@ -124,8 +118,6 @@ class EventController extends AbstractController {
         requirements: ['id' => '\d+']
     )]
     public function unsubscribeTo(int $id, EventRepository $repository, EntityManagerInterface $manager): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         $user = $this->getUser();
         $event = $repository->find($id);
 
@@ -159,8 +151,6 @@ class EventController extends AbstractController {
         requirements: ['id' => '\d+']
     )]
     public function publishEvent(int $id, EntityManagerInterface $manager): Response {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         $eventRepository = $manager->getRepository(Event::class);
         $stateRepository = $manager->getRepository(State::class);
         $user = $this->getUser();
@@ -239,8 +229,6 @@ class EventController extends AbstractController {
     #[Route(path: '/create', name: 'event_new')]
     public function create(Request $request): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         $event = new Event();
         $user = $this->getUser();
         $event->setCampus($user->getCampus());
@@ -270,7 +258,6 @@ class EventController extends AbstractController {
     requirements: ['id' => '\d+']
     )]
     public function edit($id, EventRepository $repository, Request $request){
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $user = $this->getUser();
         $event = $repository->find($id);
 
