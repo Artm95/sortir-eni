@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Details {{ event.name }}{% endblock %}
+{% set isOrganizer = app.user.isOrganizer(event) %}
+{% set state = event.state.label %}
 
 {% block body %}
+
     <div class="card m-auto">
         <div class="banner">
 
@@ -10,14 +13,17 @@
 
         <div class="card-body">
             <div class="row">
-                <div class="col-6"><h2 class="card-title mb-4">{{ event.name }}</h2></div>
-                {% if app.user.isOrganizer(event) %}
-                    <div class="col-6 text-right"><button type="button" class="btn btn-warning">Modifier</button></div>
-                {% elseif app.user.isParticipant(event) and event.state.label is same as('Ouverte') %}
-                    <div class="col-6 text-right"><a href="{{ path('event_unsubscribe', { id : event.id}) }}" type="button" class="btn btn-danger">Se désister</a></div>
-                {% elseif event.state.label is same as('Ouverte') and event.participants.count() < event.maxParticipants and date(event.signUpDeadline) >= date() %}
-                    <div class="col-6 text-right"><a href="{{ path('event_subscribe', { id : event.id}) }}" type="button" class="btn btn-success">S'inscrire</a></div>
-                {% endif %}
+                    <div class="col-6"><h2 class="card-title mb-4">{{ event.name }}</h2></div>
+                    {% if isOrganizer and state is same as("En création") %}
+                        <div class="col-6 text-right"><a href="{{ path('event_edit', { id : event.id}) }}" type="button" class="btn btn-warning">Modifier</a></div>
+                    {% elseif app.user.isParticipant(event) and state is same as('Ouverte') %}
+                        <div class="col-6 text-right"><a href="{{ path('event_unsubscribe', { id : event.id}) }}" type="button" class="btn btn-danger">Se désister</a></div>
+                    {% elseif not isOrganizer and state is same as('Ouverte') and event.participants.count() < event.maxParticipants and date(event.signUpDeadline) >= date() %}
+                        <div class="col-6 text-right"><a href="{{ path('event_subscribe', { id : event.id}) }}" type="button" class="btn btn-success">S'inscrire</a></div>
+                    {% elseif isOrganizer and state is same as("Ouverte")%}
+                        <div class="col-6 text-right"><a href="#" type="button" class="btn btn-danger">Annuler la sortie</a></div>
+                    {% endif %}
+
             </div>
             <p class="mb-4">{{ event.infos }}</p>
             <p class="mb-2"><i class="fas fa-university mr-2"></i>{{ event.campus.name }}</p>

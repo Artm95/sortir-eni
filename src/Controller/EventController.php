@@ -10,6 +10,7 @@ use App\Form\EventType;
 use App\Form\LocationType;
 use App\Form\SearchEventType;
 use App\Repository\EventRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -236,12 +237,9 @@ class EventController extends AbstractController {
     }
 
     #[Route(path: '/create', name: 'event_new')]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    public function create(Request $request): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
-        $stateRepository = $entityManager->getRepository(State::class);
-        $states = $stateRepository->findAll();
 
         $event = new Event();
         $user = $this->getUser();
@@ -253,21 +251,64 @@ class EventController extends AbstractController {
 
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
             $event = $eventForm->getData();
-            $data = $request->request->get('send');
-            $state = array_values(array_filter($states, function ($element) use ($data) {
-                return $element->getLabel() === $data;
-            }));
-            $event->setState($state[0]);
-            $entityManager->persist($event);
-            $entityManager->flush();
+            $state = $request->request->get('send');
+            $this->saveEvent($event, $state);
+
             $this->addFlash('success', 'Vous avez créé une sortie ! Yahoo !!');
             return $this->redirectToRoute('event');
         }
 
         return $this->render('event/new-event.html.twig', [
-            'controller_name' => 'EventController',
             'eventForm' => $eventForm->createView(),
-            'title' => 'Créer une sortie'
+            'title' => 'Créer une sortie',
         ]);
     }
+
+    #[Route(
+    path: '/edit-event/{id}',
+    name: 'event_edit',
+    requirements: ['id' => '\d+']
+    )]
+    public function edit($id, EventRepository $repository, Request $request){
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
+        $event = $repository->find($id);
+
+        if ($user->isOrganizer($event) && $event->getState()->getLabel() === "En création" ){
+            $eventForm = $this->createForm(EventType::class, $event);
+            $eventForm->handleRequest($request);
+            if ($eventForm->isSubmitted() && $eventForm->isValid()) {
+                $event = $eventForm->getData();
+                $state = $request->request->get('send');
+                $this->saveEvent($event, $state);
+                $this->addFlash('success', "L'evenement a été modifié avec succès");
+                return $this->redirectToRoute('event_detail', ['id' => $event->getId()]);
+            }
+            return $this->render('event/new-event.html.twig', [
+                'eventState' => $event->getState()->getLabel(),
+                'eventForm' => $eventForm->createView(),
+                'title' => 'Modifier une sortie',
+            ]);
+        } else {
+            $this->addFlash('danger', "Vous n'avez pas le droit de modifier cette sortie");
+            return $this->redirectToRoute('event');
+        }
+
+    }
+
+
+    private function saveEvent($event, string $state){
+        $entityManager = $this->getDoctrine()->getManager();
+        $stateRepository = $entityManager->getRepository(State::class);
+        $states = $stateRepository->findAll();
+        $state = array_values(array_filter($states, function ($element) use ($state)  {
+            return $element->getLabel() === $state;
+        }));
+        $event->setState($state[0]);
+        $entityManager->persist($event);
+        $entityManager->flush();
+        return $event;
+    }
+
+
 }
