@@ -313,8 +313,6 @@ class Participant implements UserInterface
         return $this->plainPassword;
     }
 
-    private $confirmation;
-
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
@@ -324,16 +322,6 @@ class Participant implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $nickname;
-
-    public function setConfirmation(string $confirmation)
-    {
-        $this->confirmation = $confirmation;
-    }
-
-    public function getConfirmation()
-    {
-        return $this->confirmation;
-    }
 
     public function isOrganizer(Event $event) : bool
     {
