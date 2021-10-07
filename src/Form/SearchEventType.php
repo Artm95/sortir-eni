@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Campus;
+use App\Entity\Form\SearchEvent;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -23,11 +24,13 @@ class SearchEventType extends AbstractType
             ->add('from', DateType::class, [
                 'label' => "Entre",
                 'widget' => 'single_text',
+                'empty_data' => null,
                 'required' => false
             ])
             ->add('to', DateType::class, [
                 'label' => "Et",
                 'widget' => 'single_text',
+                'empty_data' => null,
                 'required' => false
             ])
             ->add('campus', EntityType::class, [
@@ -59,7 +62,9 @@ class SearchEventType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'method' => 'GET'
+            'data_class' => SearchEvent::class,
+            'method' => 'GET',
+            'csrf_protection' => false,
         ]);
     }
 }

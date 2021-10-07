@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use App\Entity\Participant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,8 +22,11 @@ class EventRepository extends ServiceEntityRepository {
         return $this->createQueryBuilder('e')
             ->addSelect('o')
             ->addSelect('s')
+            ->addSelect('p')
             ->join('e.organizer', 'o')
             ->join('e.state', 's')
+            ->leftJoin('e.participants', 'p' )
+            ->where("s.label != 'Activité historisée'")
             ->getQuery()
             ->getResult();
     }
@@ -50,39 +54,41 @@ class EventRepository extends ServiceEntityRepository {
         $query = $this->createQueryBuilder('e')
             ->addSelect('o')
             ->addSelect('s')
+            ->addSelect('p')
             ->join('e.organizer', 'o')
-            ->join('e.state', 's');
-        if ($campus) {
+            ->join('e.state', 's')
+            ->leftJoin('e.participants', 'p' );
+        if ($searchEvent->getCampus()) {
             $query->addSelect('c')
                 ->join('e.campus', 'c')
-                ->andWhere('c.id = :campus')
-                ->setParameter('campus', $campus);
+                ->andWhere('e.campus = :campus')
+                ->setParameter('campus', $searchEvent->getCampus());
         }
-        if ($name) {
+        if ($searchEvent->getName()) {
             $query->andWhere('e.name LIKE :name')
-                ->setParameter('name', '%' . addcslashes($name, '%_') . '%');;
+                ->setParameter('name', '%' . addcslashes($searchEvent->getName(), '%_') . '%');;
         }
-        if ($from) {
+        if ($searchEvent->getFrom()) {
             $query->andWhere('e.startDate >= :from')
-                ->setParameter('from', $from);
+                ->setParameter('from', $searchEvent->getFrom());
         }
-        if ($to) {
+        if ($searchEvent->getTo()) {
             $query->andWhere('e.startDate <= :to')
-                ->setParameter('to', $to->setTime(23, 59, 59));
+                ->setParameter('to', $searchEvent->getTo()->setTime(23, 59, 59));
         }
-        if ($organized) {
+        if ($searchEvent->isOrganized()) {
             $query->andWhere('e.organizer = :organizer')
                 ->setParameter('organizer', $user);
         }
-        if ($subscribed) {
+        if ($searchEvent->isSubscribed()) {
             $query->andWhere(':participant MEMBER OF e.participants')
                 ->setParameter('participant', $user);
         }
-        if ($notSubscribed) {
+        if ($searchEvent->isNotSubscribed()) {
             $query->andWhere(':notParticipant NOT MEMBER OF e.participants')
                 ->setParameter('notParticipant', $user);
         }
-        if ($over) {
+        if ($searchEvent->isOver()) {
             $query->andWhere('e.startDate < CURRENT_TIMESTAMP()');
         }
 
@@ -90,8 +96,7 @@ class EventRepository extends ServiceEntityRepository {
     }
 
     public function statesUpdate() {
-        $em = $this->getEntityManager();
-        $expr = $em->getExpressionBuilder();
+        $expr = $this->getEntityManager()->getExpressionBuilder();
 
         $monthAgo = date_sub(new \DateTime(), new \DateInterval('P1M'));
         $monthOldQuery = $this->createQueryBuilder('e1')
