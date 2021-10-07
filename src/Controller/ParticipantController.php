@@ -33,7 +33,6 @@ class ParticipantController extends AbstractController
                     $user,
                     $user->getPlainPassword()
                 ));
-                $this->addFlash('success', 'Mot de passe modifié avec succés. New pass ' . $newPass);
             }
 
             if ($photo){

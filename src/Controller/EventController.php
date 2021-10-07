@@ -6,6 +6,7 @@ use App\Entity\Event;
 use App\Entity\Form\SearchEvent;
 use App\Entity\Location;
 use App\Entity\State;
+use App\Form\CancelEventType;
 use App\Form\CityChoiceType;
 use App\Form\EventType;
 use App\Form\LocationType;
@@ -152,8 +153,7 @@ class EventController extends AbstractController
 
             $user->removeSubscribedToEvent($event);
             $manager->persist($user);
-            if ($event->getParticipants()->count() === $event->getMaxParticipants() && $event->getSignUpDeadline(
-                )->format('Y-m-d') >= date('Y-m-d')) {
+            if ($event->getParticipants()->count() === $event->getMaxParticipants() && $event->getSignUpDeadline()->format('Y-m-d') >= date('Y-m-d')) {
                 $stateRepository = $manager->getRepository(State::class);
                 $openState = $stateRepository->findBy(['label' => 'Ouverte'])[0];
                 $event->setState($openState);
@@ -295,5 +295,42 @@ class EventController extends AbstractController
     {
         $this->addFlash('danger', $flashMessage);
         return $this->redirectToRoute('event');
+    }
+
+    #[Route(
+        path: '/cancel/{id}',
+        name: 'event_cancel',
+        requirements: ['id' => '\d+']
+    )]
+    public function cancel($id, Request $request, EventRepository $eventRepo): Response
+    {
+        $event = $eventRepo->find($id);
+        //event should be open or passed the subscription deadline (cloturee) and user should be its organizer
+        if ($event->getOrganizer() === $this->getUser() && ($event->getState()->getLabel() === 'Ouverte' || $event->getState()->getLabel() === 'Clôturée')) {
+            $infos = $event->getInfos();
+            $cancelForm = $this->createForm(CancelEventType::class, $event);
+            $cancelForm->get('infos')->setData('');
+            $cancelForm->handleRequest($request);
+
+            if ($cancelForm->isSubmitted() && $cancelForm->isValid()) {
+                $newInfos = $cancelForm->getData()->getInfos();
+                $event->setInfos($infos . '<br /> Motif d\'annulation : ' . $newInfos);
+                $this->saveEvent($event, 'Annulée');
+                $this->addFlash('success', "L'évenement a été annulé");
+                return $this->redirectToRoute('event_detail', ['id' => $id]);
+            }
+
+            return $this->render(
+                'event/cancel.html.twig',
+                [
+                    'title' => 'Annulation de la sortie',
+                    'event' => $event,
+                    'cancelForm' => $cancelForm->createView()
+                ]
+            );
+        } else {
+            $this->addFlash('danger', "Vous ne pouvez pas annuler cet évenement !");
+            return $this->redirectToRoute('event');
+        }
     }
 }
