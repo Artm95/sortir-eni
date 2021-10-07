@@ -24,7 +24,7 @@ class Event
     /**
      * @ORM\Column(type="string", length=255)
      */
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
     #[Assert\Length(
         min: 3,
         max: 50,

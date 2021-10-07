@@ -19,7 +19,7 @@ class SearchEvent {
 
     #[Assert\Type(\DateTime::class)]
     #[Assert\GreaterThanOrEqual(
-        propertyPath: "from",
+        propertyPath: 'from',
         message: 'Valeur incorrect'
     )]
     public ?DateTime $to = null;
