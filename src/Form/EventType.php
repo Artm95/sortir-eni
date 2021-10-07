@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -29,7 +30,7 @@ class EventType extends AbstractType
                 'required' => true,
                 'widget' => 'single_text'
             ])
-            ->add('signUpDeadline', DateTimeType::class, [
+            ->add('signUpDeadline', DateType::class, [
                 'label' => 'Date limite d\'inscription',
                 'required' => true,
                 'widget' => 'single_text'
@@ -41,7 +42,8 @@ class EventType extends AbstractType
                 'label' => 'Durée'
             ])
             ->add('infos', TextareaType::class, [
-                'label' => 'Description et infos'
+                'label' => 'Description et infos',
+                'required' => false
             ])
             ->add('campus', EntityType::class, [
                 'label' => 'Campus',

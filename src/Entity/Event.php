@@ -6,6 +6,7 @@ use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=EventRepository::class)
@@ -23,31 +24,59 @@ class Event
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: 'Le nom doit faire au moins {{ limit }} caractères',
+        maxMessage: 'Le nom ne peut pas être plus long que {{ limit }} caractères',
+    )]
     private $name;
 
     /**
      * @ORM\Column(type="datetime")
      */
+    #[Assert\NotBlank(message: 'La date est obligatoire')]
+    #[Assert\Type(\DateTime::class)]
+    #[Assert\GreaterThanOrEqual(
+        value: 'today',
+        message: 'La date de la sortie ne peut pas être inférieur à celle du jour'
+    )]
     private $startDate;
 
     /**
      * @ORM\Column(type="integer")
      */
+    #[Assert\NotBlank(message: 'La durée est obligatoire')]
+    #[Assert\Positive(message: 'La durée doit être positive')]
     private $duration;
 
     /**
      * @ORM\Column(type="date")
      */
+    #[Assert\NotBlank(message: 'La date de fin d\'inscription est obligatoire')]
+    #[Assert\Type(\DateTime::class)]
+    #[Assert\LessThanOrEqual(
+        propertyPath: 'startDate',
+        message: 'La date de fin des inscriptions ne peut pas être supérieur à celle de la sortie'
+    )]
+    #[Assert\GreaterThanOrEqual(
+        value: 'today',
+        message: 'La date de fin des inscriptions ne peut pas être inférieur à celle du jour'
+    )]
     private $signUpDeadline;
 
     /**
      * @ORM\Column(type="integer")
      */
+    #[Assert\NotBlank]
+    #[Assert\Positive(message: 'Le nombre de participants doit être positif')]
     private $maxParticipants;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
+    #[Assert\Type('string')]
     private $infos;
 
     /**
@@ -60,6 +89,8 @@ class Event
      * @ORM\ManyToOne(targetEntity=Campus::class, inversedBy="events")
      * @ORM\JoinColumn(nullable=false)
      */
+    #[Assert\NotBlank]
+    #[Assert\Type(Campus::class)]
     private $campus;
 
     /**
@@ -72,6 +103,8 @@ class Event
      * @ORM\ManyToOne(targetEntity=Location::class, inversedBy="events")
      * @ORM\JoinColumn(nullable=false)
      */
+    #[Assert\NotBlank]
+    #[Assert\Type(Location::class)]
     private $location;
 
     /**
