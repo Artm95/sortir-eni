@@ -79,9 +79,10 @@ class ParticipantController extends AbstractController
     }
 
     #[Route('/admin/users', name: 'admin_users')]
-    public function addUsers(Request $request, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, CampusRepository $campusRepository)
+    public function addUsers(Request $request, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, CampusRepository $campusRepository, ParticipantRepository $repository)
     {
         set_time_limit(300);
+        $participants = $repository->getAllWithCampus();
         $fileForm = $this->createForm(CsvUploadType::class);
         $fileForm->handleRequest($request);
 
@@ -113,7 +114,10 @@ class ParticipantController extends AbstractController
                             $participant->setIsAdmin(true);
                             $participant->setRoles(["ROLE_ADMIN"]);
                         }
-                        $participant->setPassword('password123');
+                        $participant->setPassword($passwordEncoder->encodePassword(
+                            $participant,
+                            "password123"
+                        ));
                         $participant->setFirstName($row[5]);
                         $participant->setLastName($row[6]);
                         $participant->setPhoneNumber($row[7]);
@@ -133,7 +137,8 @@ class ParticipantController extends AbstractController
 
         return $this->render('participant/add-new.html.twig', [
             'title' => 'Gestion des utilisateurs',
-            'fileForm' => $fileForm->createView()
+            'fileForm' => $fileForm->createView(),
+            'participants' => $participants
         ]);
     }
 
