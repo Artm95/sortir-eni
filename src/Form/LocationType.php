@@ -20,10 +20,11 @@ class LocationType extends AbstractType
             ->add('city', EntityType::class, [
                 'class' => City::class,
                 'choice_label' => 'name',
+                'label' => 'Ville'
             ])
-            // ->add('name', TextType::class, [
-            //     'label' => 'Lieu'
-            // ])
+             ->add('name', TextType::class, [
+                 'label' => 'Lieu'
+             ])
             ->add('street', TextType::class, [
                 'label' => 'Rue'
             ])

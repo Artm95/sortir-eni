@@ -6,6 +6,8 @@ use App\Repository\LocationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=LocationRepository::class)
@@ -13,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Location
 {
     /**
+     * @Groups("location")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -20,23 +23,33 @@ class Location
     private $id;
 
     /**
+     * @Groups("location")
      * @ORM\Column(type="string", length=255)
      */
+    #[Assert\NotBlank(message: 'Le nom du lieu est obligatoire')]
     private $name;
 
     /**
+     * @Groups("location")
      * @ORM\Column(type="string", length=255)
      */
+    #[Assert\NotBlank(message: 'Le nom de la rue est obligatoire')]
     private $street;
 
     /**
+     * @Groups("location")
      * @ORM\Column(type="float")
      */
+    #[Assert\NotBlank(message: 'L\'atitude est obligatoire et doit être un nombre')]
+    #[Assert\Type('float')]
     private $latitude;
 
     /**
+     * @Groups("location")
      * @ORM\Column(type="float")
      */
+    #[Assert\NotBlank(message: 'La longitude est obligatoire et doit être un nombre')]
+    #[Assert\Type('float')]
     private $longitude;
 
     /**
@@ -45,6 +58,7 @@ class Location
     private $events;
 
     /**
+     * @Groups("location")
      * @ORM\ManyToOne(targetEntity=City::class, inversedBy="locations")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -89,7 +103,7 @@ class Location
         return $this->latitude;
     }
 
-    public function setLatitude(float $latitude): self
+    public function setLatitude(float|null $latitude): self
     {
         $this->latitude = $latitude;
 
@@ -101,7 +115,7 @@ class Location
         return $this->longitude;
     }
 
-    public function setLongitude(float $longitude): self
+    public function setLongitude(float|null $longitude): self
     {
         $this->longitude = $longitude;
 

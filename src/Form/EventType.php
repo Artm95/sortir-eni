@@ -60,6 +60,7 @@ class EventType extends AbstractType
                 'label' => 'Lieu',
                 'class' => Location::class,
                 'choice_label' => 'name',
+                'placeholder' => 'Veuillez choisir un lieu'
             ]);
     }
 

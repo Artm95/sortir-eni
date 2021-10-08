@@ -22,20 +22,32 @@
             {{form_row(eventForm.city)}}
             <div class="row ml-0">
             {{form_row(eventForm.location)}}
-            <a href="#" class="btn btn-primary align-self-end ml-3" style="margin-bottom: 1rem; height: calc(1.5em + .75rem + 2px);"><i class="fas fa-plus"></i></a>
+            <a href="#" data-toggle="modal" data-target="#location-modal" class="btn btn-primary align-self-end ml-3" style="margin-bottom: 1rem; height: calc(1.5em + .75rem + 2px);"><i class="fas fa-plus"></i></a>
             </div>
-            <ul>
-                <li class="form-group" id="rue">
-                    <p></p>
-                </li>
-                <li class="form-group" id="longitude">
-                    <p></p>
-                </li>
-                <li class="form-group" id="latitude">
-                    <p></p>
-                </li>
-            </ul>
-
+            <fieldset disabled>
+                <div class="form-group">
+                    <label for="disabledTextInput">Rue</label>
+                    <input type="text" id="location_street_disabled" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="disabledTextInput">Code postal</label>
+                    <input type="text" id="location_zip_disabled" class="form-control">
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="disabledTextInput">Latitude</label>
+                            <input type="text" id="location_latitude_disabled" class="form-control" >
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="disabledTextInput">Longitude</label>
+                            <input type="text" id="location_longitude_disabled" class="form-control" >
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
         </div>
         </div>
         <button type="submit" class="btn btn-primary" value="En création" name="send">Enregistrer</button>
@@ -43,5 +55,36 @@
         <a href="{{path('event')}}" class="btn btn-primary">Annuler</a>
         {{ form_end(eventForm)}}
     </div>
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="location-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered text-dark" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Ajouter un lieu</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger d-none" id="location-validation-errors" role="alert">
+                    </div>
+                    {{ form(locationForm) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" id="save-location-btn" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
+{% endblock %}
+
+{% block javascripts %}
+    <script type="module" src="{{ asset('/js/addLocation.js') }}"  crossorigin="anonymous"></script>
+
+
 {% endblock %}

@@ -212,6 +212,7 @@ class EventController extends AbstractController
 
         $eventForm = $this->createForm(EventType::class, $event);
         $eventForm->handleRequest($request);
+        $locationForm = $this->createForm(LocationType::class, new Location());
 
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
             $event = $eventForm->getData();
@@ -229,6 +230,7 @@ class EventController extends AbstractController
             'event/new-event.html.twig',
             [
                 'eventForm' => $eventForm->createView(),
+                'locationForm' => $locationForm->createView(),
                 'title' => 'Créer une sortie',
             ]
         );
@@ -244,6 +246,7 @@ class EventController extends AbstractController
         $user = $this->getUser();
         try {
             $event = $repository->getAllEventDataById($id);
+            $locationForm = $this->createForm(LocationType::class, new Location());
 
             if ($user->isOrganizer($event) && $event->getState()->getLabel() === "En création") {
                 $eventForm = $this->createForm(EventType::class, $event);
@@ -259,6 +262,7 @@ class EventController extends AbstractController
                     'event/new-event.html.twig',
                     [
                         'eventState' => $event->getState()->getLabel(),
+                        'locationForm' => $locationForm->createView(),
                         'eventForm' => $eventForm->createView(),
                         'title' => 'Modifier une sortie',
                     ]
