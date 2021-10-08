@@ -18,13 +18,14 @@ security:
             anonymous: true
             lazy: true
             provider: app_user_provider
+            access_denied_handler: App\Security\AccessDeniedHandler
             user_checker: App\Security\UserChecker
             guard:
                 authenticators:
                     - App\Security\AppAuthenticator
             logout:
                 path: app_logout
-                target: "/"
+                target: "/login"
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 week in seconds
