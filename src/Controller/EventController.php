@@ -245,7 +245,7 @@ class EventController extends AbstractController
         try {
             $event = $repository->getAllEventDataById($id);
 
-            if ($user->isOrganizer($event) && $event->getState()->getLabel() === "En création") {
+            if (($user->isOrganizer($event) || $user->getIsAdmin()) && $event->getState()->getLabel() === "En création") {
                 $eventForm = $this->createForm(EventType::class, $event);
                 $eventForm->handleRequest($request);
                 if ($eventForm->isSubmitted() && $eventForm->isValid()) {
@@ -306,9 +306,10 @@ class EventController extends AbstractController
     )]
     public function cancel($id, Request $request, EventRepository $eventRepo): Response
     {
+        $user = $this->getUser();
         $event = $eventRepo->find($id);
         //event should be open or passed the subscription deadline (cloturee) and user should be its organizer
-        if ($event->getOrganizer() === $this->getUser() && ($event->getState()->getLabel() === 'Ouverte' || $event->getState()->getLabel() === 'Clôturée')) {
+        if (($user->isOrganizer($event) || $user->getIsAdmin()) && ($event->getState()->getLabel() === 'Ouverte' || $event->getState()->getLabel() === 'Clôturée')) {
             $infos = $event->getInfos();
             $cancelForm = $this->createForm(CancelEventType::class, $event);
             $cancelForm->get('infos')->setData('');

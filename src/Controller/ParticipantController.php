@@ -221,7 +221,7 @@ class ParticipantController extends AbstractController
             );
             return $this->redirectToRoute('admin_users');
         } catch (EntityNotFoundException $e) {
-            $this->addFlash('danger', 'Cette utilisateur n\'existe pas ou est déjà supprimé');
+            $this->addFlash('danger', 'Cet utilisateur n\'existe pas ou est déjà supprimé');
             return $this->redirectToRoute('admin_users');
         }
     }
