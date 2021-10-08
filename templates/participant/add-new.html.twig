@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block body %}
+
+    <h1>{{title}}</h1>
+    <form class="form" >
+        <input type="file" name="csv" id="csv" accept=".csv">
+        <button type="submit" class="btn btn-primary">Importer les utilisateurs</button>
+    </form>
+
+    
+{% endblock %}

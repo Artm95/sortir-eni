@@ -21,12 +21,15 @@
             <li class="nav-item">
                 <a class="nav-link" href="#">Campus</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{path('admin_users')}}">Utilisateurs</a>
+            </li>
             {% endif %}
             <li class="nav-item">
                 <a class="nav-link {{ app.request.get('_route') == 'participant_edit' ? 'active' :'' }}" href="{{path('participant_edit')}}">Mon profil</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ app.request.get('_route') == 'app_logout' ? 'active' :'' }}" href="{{path('app_logout')}}">Se deconnecter</a>
+                <a class="nav-link" href="{{path('app_logout')}}">Se deconnecter</a>
             </li>
             </ul>
             {# <form class="form-inline my-2 my-lg-0">

@@ -71,4 +71,14 @@ class ParticipantController extends AbstractController
             return $this->redirectToRoute('event');
         }
     }
+
+    #[Route('/admin/users', name: 'admin_users')]
+    public function addUsers(ParticipantRepository $repository)
+    {
+
+
+        return $this->render('participant/add-new.html.twig', [
+            'title' => 'Gestion des utilisateurs'
+        ]);
+    }
 }
