@@ -74,10 +74,11 @@ class ParticipantController extends AbstractController {
 
     #[Route('/admin/users', name: 'admin_users')]
     public function addUsers(ParticipantRepository $repository) {
-
+        $participants = $repository->getAllWithCampus();
 
         return $this->render('participant/add-new.html.twig', [
-            'title' => 'Gestion des utilisateurs'
+            'title' => 'Gestion des utilisateurs',
+            'participants' => $participants
         ]);
     }
 
@@ -92,7 +93,7 @@ class ParticipantController extends AbstractController {
             $participant = $form->getData();
             $participant->setPassword($passwordEncoder->encodePassword(
                 $participant,
-                'motdepasse123'
+                'password123'
             ));
             if ($participant->getIsAdmin()) {
                 $participant->setRoles(['ROLE_ADMIN']);
@@ -107,5 +108,60 @@ class ParticipantController extends AbstractController {
             'userForm' => $form->createView(),
             'title' => 'Ajouter un utilisateur'
         ]);
+    }
+
+    #[Route(
+        path: '/admin/users/activation/{id}',
+        name: 'admin_users_active',
+        requirements: ['id' => '\d+']
+    )]
+    public function setParticipantActive(int $id, ParticipantRepository $repository, EntityManagerInterface $manager): Response
+    {
+        try {
+            $user = $repository->findOrFail($id);
+            if ($user->getId() === $this->getUser()->getId()) {
+                $this->addFlash('warning', 'Vous ne pouvez désactiver votre propre compte');
+                return $this->redirectToRoute('admin_users');
+            }
+            $user->setIsActive(!$user->getIsActive());
+            $manager->persist($user);
+            $manager->flush();
+
+            $this->addFlash(
+                'success',
+                'Utilisateur  '.$user->getFirstName().' '.$user->getLastName().' '.($user->getIsActive() ? 'activé' : 'désactivé')
+            );
+            return $this->redirectToRoute('admin_users');
+        } catch (EntityNotFoundException $e) {
+            $this->addFlash('danger', $e->getMessage());
+            return $this->redirectToRoute('admin_users');
+        }
+    }
+
+    #[Route(
+        path: '/admin/users/supprimer/{id}',
+        name: 'admin_users_remove',
+        requirements: ['id' => '\d+']
+    )]
+    public function removeParticipant(int $id, ParticipantRepository $repository, EntityManagerInterface $manager): Response
+    {
+        try {
+            $user = $repository->findOrFail($id);
+            if ($user->getId() === $this->getUser()->getId()) {
+                $this->addFlash('warning', 'Vous ne pouvez supprimer votre propre compte');
+                return $this->redirectToRoute('admin_users');
+            }
+            $manager->remove($user);
+            $manager->flush();
+
+            $this->addFlash(
+                'success',
+                'Utilisateur  '.$user->getFirstName().' '.$user->getLastName().' supprimé'
+            );
+            return $this->redirectToRoute('admin_users');
+        } catch (EntityNotFoundException $e) {
+            $this->addFlash('danger', 'Cette utilisateur n\'existe pas ou est déjà supprimé');
+            return $this->redirectToRoute('admin_users');
+        }
     }
 }
