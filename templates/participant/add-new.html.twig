@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% form_theme fileForm 'bootstrap_4_layout.html.twig' %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -7,18 +8,15 @@
     <h1>{{ title }}</h1>
     <div class="card p-2">
         <div class="d-flex flex-row justify-content-around">
-            <form class="form">
-                <label for="csv">Importer des utilisateurs :</label>
-                <div>
-                    <input type="file" name="csv" id="csv" accept=".csv">
-                    <button type="submit" class="btn btn-primary">Importer les utilisateurs</button>
-                </div>
-            </form>
-            <a href="{{ path('admin_users_add') }}">Ajouter un utilisateur manuellement</a>
+            <div class="form mt-3" >
+                {{ form_start(fileForm) }}
+                {{ form_widget(fileForm) }}
+                <button type="submit" class="btn btn-primary">Importer</button>
+                <p class="mb-0" >ou</p>
+                {{ form_end(fileForm) }}
+                <a class="btn btn-secondary" href="{{ path('admin_users_add') }}">Ajouter un utilisateur manuellement</a>
+            </div>
         </div>
-
-
-
         <div class="mt-4 row justify-content-center">
             <div class="col-auto">
                 <table class="table text-center table-responsive">
@@ -72,4 +70,15 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+
+    {#    script to fix the bug of file input rendering#}
+    <script>
+        document.querySelector('.custom-file-input').addEventListener('change', function(event) {
+            let inputFile = event.currentTarget;
+            inputFile.parentNode.querySelector('.custom-file-label')
+                .innerHTML = inputFile.files[0].name;
+        });
+    </script>
 {% endblock %}

@@ -4,21 +4,27 @@ namespace App\Controller;
 
 use App\Entity\Participant;
 use App\Form\AddUserType;
+use App\Form\CsvUploadType;
 use App\Form\ProfileType;
+use App\Repository\CampusRepository;
 use App\Repository\ParticipantRepository;
 use App\Utils\UploaderHelper;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class ParticipantController extends AbstractController {
+class ParticipantController extends AbstractController
+{
 
     #[Route('/edit-profile', name: 'participant_edit')]
-    public function edit(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, UploaderHelper $uploaderHelper): Response {
+    public function edit(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, UploaderHelper $uploaderHelper): Response
+    {
         $user = $this->getUser();
 
         $form = $this->createForm(ProfileType::class, $user);
@@ -42,9 +48,8 @@ class ParticipantController extends AbstractController {
                     $uploaderHelper->deleteUploadedFile($destination . '/' . $user->getPhoto());
                 }
                 //we create a unique file name based on user id
-                $fileName = $uploaderHelper->uploadPhoto($photo, $destination);
+                $fileName = $uploaderHelper->uploadFile($photo, $destination);
                 $user->setPhoto($fileName);
-
             }
             $entityManager->persist($user);
             $entityManager->flush();
@@ -59,7 +64,8 @@ class ParticipantController extends AbstractController {
     }
 
     #[Route('/profile/{id}', name: 'user_detail', requirements: ['id' => '\d+'])]
-    public function showProfile(int $id, ParticipantRepository $repository) {
+    public function showProfile(int $id, ParticipantRepository $repository)
+    {
         try {
             $user = $repository->findOrFail($id);
 
@@ -73,17 +79,72 @@ class ParticipantController extends AbstractController {
     }
 
     #[Route('/admin/users', name: 'admin_users')]
-    public function addUsers(ParticipantRepository $repository) {
+    public function addUsers(Request $request, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, CampusRepository $campusRepository, ParticipantRepository $repository)
+    {
+        set_time_limit(300);
         $participants = $repository->getAllWithCampus();
+        $fileForm = $this->createForm(CsvUploadType::class);
+        $fileForm->handleRequest($request);
+
+        if ($fileForm->isSubmitted() && $fileForm->isValid()) {
+            $file = $fileForm->get('csv')->getData();
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads';
+            $fileName = $uploaderHelper->uploadFile($file, $destination);
+            $rowNo = 0;
+            $campus = $campusRepository->findAll();
+            // $fp is file pointer to file
+            try {
+                if (($fp = fopen($destination . "/" . $fileName, "r")) !== FALSE) {
+                    while (($row = fgetcsv($fp, 1000, ",")) !== FALSE) {
+                        if ($rowNo === 0) {
+                            $rowNo++;
+                            continue;
+                        }
+                        $participant = new Participant();
+                        $camp = array_values(array_filter($campus, function ($element) use ($row) {
+                            return $element->getId() === intval($row[1]);
+                        }));
+                        if (count($camp) > 0) {
+                            $participant->setCampus($camp[0]);
+                        } else {
+                            $participant->setCampus($campus[0]);
+                        }
+                        $participant->setEmail($row[2]);
+                        if (intval($row[8]) === 1) {
+                            $participant->setIsAdmin(true);
+                            $participant->setRoles(["ROLE_ADMIN"]);
+                        }
+                        $participant->setPassword($passwordEncoder->encodePassword(
+                            $participant,
+                            "password123"
+                        ));
+                        $participant->setFirstName($row[5]);
+                        $participant->setLastName($row[6]);
+                        $participant->setPhoneNumber($row[7]);
+                        $participant->setIsActive(true);
+                        $entityManager->persist($participant);
+                        $rowNo++;
+                    }
+                    fclose($fp);
+                }
+                $entityManager->flush();
+                $this->addFlash('success', ($rowNo - 1) . ' utilisateurs importés avec succés');
+            } catch (Exception $e) {
+                $this->addFlash('danger', 'Une erreur s\'est produite lors de l\'import : ' . $e->getMessage());
+            }
+            $uploaderHelper->deleteUploadedFile($destination . "/" . $fileName);
+        }
 
         return $this->render('participant/add-new.html.twig', [
             'title' => 'Gestion des utilisateurs',
+            'fileForm' => $fileForm->createView(),
             'participants' => $participants
         ]);
     }
 
     #[Route('/admin/users/ajout', name: 'admin_users_add')]
-    public function addOne(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder): Response {
+    public function addOne(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder): Response
+    {
         $participant = new Participant();
         $form = $this->createForm(AddUserType::class, $participant);
 
