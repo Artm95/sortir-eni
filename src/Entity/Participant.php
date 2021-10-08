@@ -76,10 +76,10 @@ class Participant implements UserInterface
     /**
      * @ORM\Column(type="string", length=15)
      */
-    /*
     #[Assert\NotBlank(message: 'Le numéro de téléphone est obligatoire')]
+    /*
     #[Assert\Regex(
-        pattern: '^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$',
+        pattern: "^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$",
         message: 'Le numéro de téléphone doit suivre un des formats suivant : +33 X XX XX XX XX / XX XX XX XX XX / 0033 X XX XX XX XX'
     )]
     */
@@ -100,6 +100,7 @@ class Participant implements UserInterface
      * @ORM\JoinColumn(nullable=false)
      */
     #[Assert\NotBlank(message: 'Le campus est obligatoire')]
+    #[Assert\Type(Campus::class)]
     private $campus;
 
     /**
