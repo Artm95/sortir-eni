@@ -44,7 +44,7 @@ class EventController extends AbstractController
                 $this->getUser()
             );
         } else {
-            $events = $repository->getAllWithOrganizer();
+            $events = $repository->getAllBasic();
         }
 
         return $this->render(

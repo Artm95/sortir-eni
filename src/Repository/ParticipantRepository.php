@@ -44,8 +44,16 @@ class ParticipantRepository extends ServiceEntityRepository implements PasswordU
      */
     public function findOrFail($id){
         $participant = $this->find($id);
-        if ($participant==null) throw new EntityNotFoundException("L'utilisateur demnadé n'existe pas");
+        if ($participant==null) throw new EntityNotFoundException("L'utilisateur demandé n'existe pas");
         return $participant;
+    }
+
+    public function getAllWithCampus() {
+        return $this->createQueryBuilder('p')
+            ->addSelect('c')
+            ->join('p.campus', 'c')
+            ->getQuery()
+            ->getResult();
     }
 
     // /**
