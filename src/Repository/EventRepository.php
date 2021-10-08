@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use App\Entity\Form\SearchEvent;
 use App\Entity\Participant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityNotFoundException;
@@ -21,7 +22,7 @@ class EventRepository extends ServiceEntityRepository {
         parent::__construct($registry, Event::class);
     }
 
-    public function getAllWithOrganizer() {
+    public function getAllBasic() {
         return $this->createQueryBuilder('e')
             ->addSelect('o')
             ->addSelect('s')
@@ -63,7 +64,13 @@ class EventRepository extends ServiceEntityRepository {
         }
     }
 
-    public function search($searchEvent, $user) {
+    /**
+     * get all Events that meet the criteria in searchEvent
+     * @param $searchEvent SearchEvent
+     * @param Participant|null $user if some criteria in searchEvent require to search a user, this user will be used, if null the criteria needing a user will be ignored
+     * @return int|mixed|string
+     */
+    public function search(SearchEvent $searchEvent, ?Participant $user) {
         $query = $this->createQueryBuilder('e')
             ->addSelect('o')
             ->addSelect('s')
@@ -89,19 +96,19 @@ class EventRepository extends ServiceEntityRepository {
             $query->andWhere('e.startDate <= :to')
                 ->setParameter('to', $searchEvent->getTo()->setTime(23, 59, 59));
         }
-        if ($searchEvent->isOrganized()) {
+        if ($searchEvent->isOrganized() && $user) {
             $query->andWhere('e.organizer = :organizer')
                 ->setParameter('organizer', $user);
         }
-        if ($searchEvent->isSubscribed()) {
+        if ($searchEvent->isSubscribed() && $user) {
             $query->andWhere(':participant MEMBER OF e.participants')
                 ->setParameter('participant', $user);
         }
-        if ($searchEvent->isNotSubscribed()) {
+        if ($searchEvent->isNotSubscribed() && $user) {
             $query->andWhere(':notParticipant NOT MEMBER OF e.participants')
                 ->setParameter('notParticipant', $user);
         }
-        if ($searchEvent->isOver()) {
+        if ($searchEvent->isOver() && $user) {
             $query->andWhere('e.startDate < CURRENT_TIMESTAMP()');
         }
 

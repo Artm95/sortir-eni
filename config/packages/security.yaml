@@ -18,12 +18,14 @@ security:
             anonymous: true
             lazy: true
             provider: app_user_provider
+            access_denied_handler: App\Security\AccessDeniedHandler
+            user_checker: App\Security\UserChecker
             guard:
                 authenticators:
                     - App\Security\AppAuthenticator
             logout:
                 path: app_logout
-                target: "/"
+                target: "/login"
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 week in seconds
@@ -40,4 +42,5 @@ security:
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+         - { path: ^/reset-password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
          - { path: ^/, roles: ROLE_USER }

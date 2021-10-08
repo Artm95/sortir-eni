@@ -74,15 +74,14 @@ class Participant implements UserInterface
     private $lastName;
 
     /**
-     * @ORM\Column(type="string", length=15)
+     * @ORM\Column(type="string", length=20)
      */
-    /*
     #[Assert\NotBlank(message: 'Le numéro de téléphone est obligatoire')]
     #[Assert\Regex(
-        pattern: '^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$',
-        message: 'Le numéro de téléphone doit suivre un des formats suivant : +33 X XX XX XX XX / XX XX XX XX XX / 0033 X XX XX XX XX'
+        pattern: '/^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/',
+        message: 'Le numéro de téléphone doit suivre le format suivant : XX XX XX XX XX'
+        //message: 'Le numéro de téléphone doit suivre un des formats suivant : +33 X XX XX XX XX / XX XX XX XX XX / 0033 X XX XX XX XX'
     )]
-    */
     private $phoneNumber;
 
     /**
@@ -100,6 +99,7 @@ class Participant implements UserInterface
      * @ORM\JoinColumn(nullable=false)
      */
     #[Assert\NotBlank(message: 'Le campus est obligatoire')]
+    #[Assert\Type(Campus::class)]
     private $campus;
 
     /**
@@ -232,6 +232,7 @@ class Participant implements UserInterface
 
     public function setPhoneNumber(string $phoneNumber): self
     {
+        $phoneNumber = $this->formatPhoneNumber($phoneNumber);
         $this->phoneNumber = $phoneNumber;
 
         return $this;
@@ -388,5 +389,23 @@ class Participant implements UserInterface
         $this->nickname = $nickname;
 
         return $this;
+    }
+
+    /**
+     * format a phone french phone number to get it as a 10 digits long string
+     * @param string|null $phoneNumber
+     * @return string|null
+     */
+    private function formatPhoneNumber(?string $phoneNumber) : ?string {
+        if (!$phoneNumber) {
+            return null;
+        }
+        $formatted = str_replace(' ', '', $phoneNumber);
+        if (strlen($formatted) > 10) {
+            $split = explode('33', $formatted);
+            array_slice($split, 0, 1);
+            $formatted = '0'.implode('', $split);
+        }
+        return $formatted;
     }
 }

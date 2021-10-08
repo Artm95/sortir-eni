@@ -6,6 +6,7 @@ use App\Repository\CityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 
@@ -26,12 +27,26 @@ class City
      * @Groups("location")
      * @ORM\Column(type="string", length=255)
      */
+    #[Assert\NotBlank(message: 'Le nom de la ville est obligatoire')]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: 'Le nom de la ville doit faire au moins {{ limit }} caractères',
+        maxMessage: 'Le nom de la ville ne peut pas être plus long que {{ limit }} caractères',
+    )]
     private $name;
 
     /**
      * @Groups("location")
-     * @ORM\Column(type="string", length=5)
+     * @ORM\Column(type="string", length=5, unique=true)
      */
+    #[Assert\NotBlank(message: 'Le code postal est obligatoire')]
+    #[Assert\Length(
+        min: 5,
+        max: 5,
+        minMessage: 'Le code postal doit faire {{ limit }} caractères',
+        maxMessage: 'Le code postal doit faire {{ limit }} caractères',
+    )]
     private $zipCode;
 
     /**

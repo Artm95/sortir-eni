@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+{% form_theme fileForm 'bootstrap_4_layout.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+
+    <h1>{{ title }}</h1>
+    <div class="card p-2">
+        <div class="d-flex flex-row justify-content-around">
+            <div class="form mt-3" >
+                {{ form_start(fileForm) }}
+                {{ form_widget(fileForm) }}
+                <button type="submit" class="btn btn-primary">Importer</button>
+                <p class="mb-0" >ou</p>
+                {{ form_end(fileForm) }}
+                <a class="btn btn-secondary" href="{{ path('admin_users_add') }}">Ajouter un utilisateur manuellement</a>
+            </div>
+        </div>
+        <div class="mt-4 row justify-content-center">
+            <div class="col-auto">
+                <table class="table text-center table-responsive">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Campus</th>
+                        <th>Admin</th>
+                        <th>Actif</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for participant in participants %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('user_detail', { id : participant.id }) }}">
+                                    {{ participant.firstName~' '~participant.lastName }}
+                                </a>
+                            </td>
+                            <td>{{ participant.email }}</td>
+                            <td>{{ participant.campus.name }}</td>
+                            <td>
+                                {% if participant.isAdmin %}
+                                    <i class="fas fa-check text-success"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if participant.isActive %}
+                                    <i class="fas fa-check text-success"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if app.user.id is not same as(participant.id) %}
+                                <a href="{{ path('admin_users_active', { id: participant.id }) }}"
+                                   class="btn btn-sm {{ participant.isActive ? 'btn-warning' : 'btn-primary' }}"
+                                >
+                                    {{ participant.isActive ? 'Désactiver' : 'Activer' }}
+                                </a>
+                                <a href="{{ path('admin_users_remove', { id: participant.id }) }}"
+                                        class="btn btn-sm btn-danger">
+                                    Supprimer
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+
+    {#    script to fix the bug of file input rendering#}
+    <script>
+        document.querySelector('.custom-file-input').addEventListener('change', function(event) {
+            let inputFile = event.currentTarget;
+            inputFile.parentNode.querySelector('.custom-file-label')
+                .innerHTML = inputFile.files[0].name;
+        });
+    </script>
+{% endblock %}

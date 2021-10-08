@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class UploaderHelper
 {
 
-    public function uploadPhoto(UploadedFile $uploadedFile, string $destination) :string
+    public function uploadFile(UploadedFile $uploadedFile, string $destination): string
     {
         $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
         $fileName = $originalFilename . '-' . uniqid() .'.'. $uploadedFile->guessExtension();
