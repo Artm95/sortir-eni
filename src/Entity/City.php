@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @ORM\Entity(repositoryClass=CityRepository::class)
@@ -52,6 +52,7 @@ class City
     /**
      * @ORM\OneToMany(targetEntity=Location::class, mappedBy="city", orphanRemoval=true)
      */
+    #[Ignore]
     private $locations;
 
     public function __construct()
