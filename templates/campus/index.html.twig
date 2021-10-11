@@ -1,20 +1,50 @@
 {% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
 
-{% block title %}Hello CampusController!{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <h1>{{ title }}</h1>
+    <div class="card p-2">
+        <div class="d-flex flex-row justify-content-around">
+            <div class="form mt-3 mb-3" >
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <button type="submit" class="btn btn-primary">{{ action }}</button>
+                <a class="btn btn-secondary" href="{{ action is same as('Modifier') ? path('admin_campuses') : path('event') }}">Annuler</a>
+                {{ form_end(form) }}
+            </div>
+        </div>
+        <div class="mt-4 row justify-content-center">
+            <div class="col-auto">
+                <table class="table text-center table-responsive" id="campuses-table">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for campus in campuses %}
+                        <tr>
+                            <td>{{ campus.name }}</td>
+                            <td>
+                                <a href="{{path('admin_campus_edit', { id : campus.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                <a href="{{ path('admin_campus_delete', { id : campus.id}) }}" class="btn btn-sm btn-danger">Supprimer</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/wamp64/www/sortir-eni/src/Controller/CampusController.php'|file_link(0) }}">src/Controller/CampusController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/wamp64/www/sortir-eni/templates/campus/index.html.twig'|file_link(0) }}">templates/campus/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <script>
+        console.log{{ campuses|json_encode }})
+    </script>
 {% endblock %}
+
+
+
