@@ -23,10 +23,10 @@ class LocationController extends AbstractController
      * @param Request $request
      * @param CityRepository $cityRepository
      * @param ValidatorInterface $validator
-     * @param SerializerHelper $serialiserHelper
+     * @param SerializerHelper $serializerHelper
      * @return Response
      */
-    public function create(Request $request, CityRepository $cityRepository, ValidatorInterface $validator, SerializerHelper $serialiserHelper)
+    public function create(Request $request, CityRepository $cityRepository, ValidatorInterface $validator, SerializerHelper $serializerHelper)
     {
         try {
             $data = $request->request->all()['location'];
@@ -52,7 +52,7 @@ class LocationController extends AbstractController
             $entityManager->persist($location);
             $entityManager->flush();
 
-            $response = new Response($serialiserHelper->getSerializer()->serialize($location, 'json', ['groups'=>'location']));
+            $response = new Response($serializerHelper->getSerializer()->serialize($location, 'json', ['groups'=>'location']));
             $response->headers->set('Content-Type', 'application/json');
 
             return $response;
@@ -66,14 +66,14 @@ class LocationController extends AbstractController
     /**
      * @Route("/get/locations", name="locations")
      * @param LocationRepository $repository
-     * @param SerializerHelper $serialiserHelper
+     * @param SerializerHelper $serializerHelper
      * @return Response
      */
-    public function getAllLocations(LocationRepository $repository, SerializerHelper $serialiserHelper){
+    public function getAllLocations(LocationRepository $repository, SerializerHelper $serializerHelper){
 
         $locations = $repository->findAllWithCity();
 
-        $json =$serialiserHelper->getSerializer()->serialize($locations, 'json', ['groups'=>'location']);
+        $json =$serializerHelper->getSerializer()->serialize($locations, 'json', ['groups'=>'location']);
         $response = new Response($json);
         $response->headers->set('Content-Type', 'application/json');
 
