@@ -15,10 +15,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CampusController extends AbstractController
 {
+    /**
+     * Affichage de la page avec la liste des campus
+     * Création d'un nouveau campus
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('admin/campuses', name: 'admin_campuses')]
-    public function index(Request $request, EntityManagerInterface $entityManager, CampusRepository $campusRepository): Response
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $campuses = $campusRepository->findAll();
         $campus = new Campus();
         $form = $this->createForm(CampusType::class, $campus);
         $form->handleRequest($request);
@@ -40,14 +46,20 @@ class CampusController extends AbstractController
             'form' => $form->createView(),
             'title' => 'Gérer les campus',
             'action' => 'Ajouter',
-            'campuses' => $campuses
         ]);
     }
 
+    /**
+     * Modification du campus
+     * @param $id
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param CampusRepository $campusRepository
+     * @return Response
+     */
     #[Route('admin/campus/edit/{id}', name: 'admin_campus_edit', requirements: ['id' => '\d+'])]
     public function edit($id, Request $request, EntityManagerInterface $entityManager, CampusRepository $campusRepository): Response
     {
-            $campuses = $campusRepository->findAll();
             $campus = $campusRepository->find($id);
             $form = $this->createForm(CampusType::class, $campus);
             $form->handleRequest($request);
@@ -69,11 +81,17 @@ class CampusController extends AbstractController
             'form' => $form->createView(),
             'title' => 'Modifier le campus',
             'action'=>'Modifier',
-            'campuses' => $campuses
         ]);
 
     }
 
+    /**
+     * Suppression du campus
+     * @param $id
+     * @param EntityManagerInterface $entityManager
+     * @param CampusRepository $campusRepository
+     * @return Response
+     */
     #[Route('admin/campus/delete/{id}', name: 'admin_campus_delete', requirements: ['id' => '\d+'])]
     public function delete($id, EntityManagerInterface $entityManager, CampusRepository $campusRepository): Response
     {
@@ -93,6 +111,12 @@ class CampusController extends AbstractController
         }
     }
 
+    /**
+     * Envoie de données de tous les campus
+     * @param CampusRepository $repository
+     * @param SerializerHelper $serializerHelper
+     * @return Response
+     */
     #[Route('admin/get/campuses')]
     public function getAllCampuses(CampusRepository $repository, SerializerHelper $serializerHelper){
         $campuses = $repository->findAll();

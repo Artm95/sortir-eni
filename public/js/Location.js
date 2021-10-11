@@ -1,26 +1,32 @@
 export default class Location{
     constructor(locationsData) {
+        //setting constructor variable
+        this.allLocationsData = locationsData;
+        //Getting all necessary dom elements
         this.streetField = document.getElementById("location_street_disabled");
         this.zipField = document.getElementById("location_zip_disabled");
         this.latitudeField = document.getElementById("location_latitude_disabled");
         this.longitudeField = document.getElementById("location_longitude_disabled");
         this.submitLocationBtn = document.getElementById("save-location-btn")
-        this.currentLocationId = parseInt(document.getElementById("location-form").dataset.location);
         this.citySelect = document.getElementById("event_city");
-        this.initialCityId = parseInt(this.citySelect.value)
         this.locationSelect = document.getElementById("event_location")
-        this.allLocationsData = locationsData;
+        //getting initial data
+        this.currentLocationId = parseInt(document.getElementById("location-form").dataset.location);
+        this.initialCityId = parseInt(this.citySelect.value)
+        //if initial data is not null we render current location an city, otherwise all locations by city set in select
         if(this.currentLocationId) this.setLocationData(this.findLocationById(this.currentLocationId))
         else this.renderLocations(this.getLocationsByCity(this.initialCityId));
 
-
+        //adding event listeners
+        //submit listener
         this.submitLocationBtn.addEventListener("click", this.submitLocationForm.bind(this))
+        //city select listener
         this.citySelect.addEventListener("change", async (e)=>{
             let cityId = parseInt(e.target.value)
             this.renderLocations(this.getLocationsByCity(cityId))
             this.cleanLocationFields()
         })
-
+        //location select listener
         this.locationSelect.addEventListener('change', (e)=>{
             if (e.target.value){
                 let locationId = parseInt(e.target.value);
@@ -28,26 +34,42 @@ export default class Location{
             }else{
                 this.cleanLocationFields()
             }
-
         })
     }
 
+    /**
+     * Get all locations by city
+     * @param cityId
+     * @returns array: city's locations
+     */
     getLocationsByCity(cityId){
         return this.allLocationsData.filter((location)=>{
             return location.city.id === cityId;
         })
     }
 
+    /**
+     * Find location in the list
+     * @param id
+     * @returns Object: location found in the list
+     */
     findLocationById(id){
         return this.allLocationsData.find((location)=>{
             return location.id === id
         })
     }
 
+    /**
+     * Add a location to current location's list
+     * @param location
+     */
     addLocation(location){
         this.allLocationsData.push(location)
     }
 
+    /**
+     * Submit locations form to save new location in database
+     */
     submitLocationForm(){
         const errorsAlertEl = document.getElementById('location-validation-errors')
         let form = document.forms.location;
@@ -71,6 +93,11 @@ export default class Location{
         })
 
     }
+
+    /**
+     * Render a select with the list of location
+     * @param cityLocations: locations to render
+     */
     renderLocations(cityLocations){
         const locationSelect = document.getElementById("event_location")
 
@@ -82,6 +109,11 @@ export default class Location{
         locationSelect.innerHTML = html
 
     }
+
+    /**
+     * Renders location data into input fields
+     * @param location
+     */
     setLocationData(location){
         this.streetField.value = location.street;
         this.zipField.value = location.city.zipCode;
@@ -90,6 +122,9 @@ export default class Location{
         this.citySelect.value = location.city.id
     }
 
+    /**
+     * Clean location fields
+     */
     cleanLocationFields(){
         this.streetField.value = "";
         this.zipField.value = "";

@@ -14,7 +14,15 @@ use Symfony\Component\Serializer\Serializer;
 
 class SerializerHelper
 {
+    /**
+     * @var Serializer
+     */
     private $serializer;
+
+    /**
+     * On initialize tous les paramètres
+     * SerializerHelper constructor.
+     */
     public function __construct()
     {
         $encoders = [new JsonEncoder()];

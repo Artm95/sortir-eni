@@ -25,7 +25,7 @@
                     {% elseif not isOrganizer and state is same as('Ouverte') and event.participants.count() < event.maxParticipants and date(event.signUpDeadline) >= date() %}
                         <div class="text-right mb-3"><a href="{{ path('event_subscribe', { id : event.id}) }}" type="button" class="btn btn-success">S'inscrire</a></div>
                     {% endif %}
-                    {% if isAdmin or isOrganizer and state is same as("Ouverte") %}
+                    {% if (isAdmin or isOrganizer) and state is same as("Ouverte") %}
                         <div class="text-right mb-3"><a href="{{ path('event_cancel', { id : event.id}) }}" type="button" class="btn btn-danger">Annuler la sortie</a></div>
                     {% endif %}
                     </div>

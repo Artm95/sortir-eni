@@ -1,17 +1,26 @@
+//Getting necesssary dom elements
 const searchBtn = document.getElementById("search-btn");
 const searchInput = document.getElementById("search-input")
+
+//fetching data
 axios.get('/admin/get/campuses').then(response=>{
     let campuses = response.data;
+    //rendering all campuses data
     renderCampuses(campuses)
+    //adding event listener to search button
     searchBtn.addEventListener("click", ()=>{
         filterCampuses(campuses, searchInput.value)
     })
-
+    //adding event listener to search input
     searchInput.addEventListener('keyup', (e)=>{
         if (e.key ==='Enter') filterCampuses(campuses, searchInput.value)
     })
 })
 
+/**
+ * Render table rows with campuses' information
+ * @param campuses
+ */
 function renderCampuses(campuses){
     const tableBody = document.getElementById("campuses-table-body");
     tableBody.innerHTML = ""
@@ -32,6 +41,11 @@ function renderCampuses(campuses){
     })
 }
 
+/**
+ * Filter campuses by name and searchValue
+ * @param campuses
+ * @param searchValue
+ */
 function filterCampuses(campuses, searchValue){
     searchValue = searchValue.toLowerCase()
     let campusesFiltered = campuses.filter((campus)=>{
