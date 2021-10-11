@@ -84,7 +84,11 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script type="module" src="{{ asset('/js/addLocation.js') }}"  crossorigin="anonymous"></script>
+    <script>    
+        const pathGet = "{{ path('locations_get') }}" ;
+        const pathPost = "{{ path('locations_post') }}" ;
+    </script>
+    <script type="module" src="{{ asset('js/addLocation.js') }}"  crossorigin="anonymous"></script>
 
 
 {% endblock %}

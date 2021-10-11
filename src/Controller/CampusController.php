@@ -117,7 +117,7 @@ class CampusController extends AbstractController
      * @param SerializerHelper $serializerHelper
      * @return Response
      */
-    #[Route('admin/get/campuses')]
+    #[Route('admin/get/campuses', name: 'campus_get')]
     public function getAllCampuses(CampusRepository $repository, SerializerHelper $serializerHelper){
         $campuses = $repository->findAll();
         $response = new Response($serializerHelper->getSerializer()->serialize($campuses, 'json', ['groups'=>'campus']));

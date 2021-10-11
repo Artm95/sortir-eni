@@ -75,7 +75,7 @@ export default class Location{
         let form = document.forms.location;
         let formData = new FormData(form);
 
-        axios.post('/post/location', formData).then(async(response)=>{
+        axios.post(pathPost, formData).then(async(response)=>{
             $('#location-modal').modal('hide')
             await this.addLocation(response.data);
             await this.renderLocations(this.getLocationsByCity(response.data.city.id))
