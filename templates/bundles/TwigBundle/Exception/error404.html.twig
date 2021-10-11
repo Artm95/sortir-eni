@@ -1,16 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Erreur{% endblock %}
-{% block stylesheets %}
-    <style>
-        .pt-20 {
-            padding-top: 20%;
-        }
-    </style>
-{% endblock %}
+{% block title %}Erreur-404{% endblock %}
 
 {% block body %}
-    <div class="pt-20 text-center">
-        <h2>La page demandée n'existe pas.</h2>
+    
+    <div class="text-center">
+        <div style="height: 400px">
+            <img src="{{ asset('/images/error-pages/error-404.png') }}" alt="" style="max-width: 100%; max-height: 100%">
+        </div>
+
+        <h2>Oops ! La page demandée n'existe pas.</h2>
+        <a type="button" class="btn btn-secondary" href="{{ path('event') }}">Retourner à l'accueil</a>
     </div>
 {% endblock %}
