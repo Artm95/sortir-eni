@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Campus;
 use App\Form\CampusType;
 use App\Repository\CampusRepository;
+use App\Utils\SerializerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -90,6 +91,15 @@ class CampusController extends AbstractController
             $this->addFlash('danger', 'Cette campuse n\'existe pas ou a déjà été supprimé');
             return $this->redirectToRoute('admin_campuses');
         }
+    }
+
+    #[Route('admin/get/campuses')]
+    public function getAllCampuses(CampusRepository $repository, SerializerHelper $serializerHelper){
+        $campuses = $repository->findAll();
+        $response = new Response($serializerHelper->getSerializer()->serialize($campuses, 'json', ['groups'=>'campus']));
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
     }
 
 }

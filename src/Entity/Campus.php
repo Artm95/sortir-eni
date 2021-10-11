@@ -6,6 +6,8 @@ use App\Repository\CampusRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -17,11 +19,13 @@ class Campus
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("campus")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("campus")
      */
     #[Assert\NotBlank(message: 'Le nom du campus est obligatoire')]
     #[Assert\Length(
@@ -34,11 +38,13 @@ class Campus
 
     /**
      * @ORM\OneToMany(targetEntity=Participant::class, mappedBy="campus")
+     *
      */
     private $participants;
 
     /**
      * @ORM\OneToMany(targetEntity=Event::class, mappedBy="campus", orphanRemoval=true)
+     *
      */
     private $events;
 
