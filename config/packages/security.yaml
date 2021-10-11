@@ -18,7 +18,6 @@ security:
             anonymous: true
             lazy: true
             provider: app_user_provider
-            access_denied_handler: App\Security\AccessDeniedHandler
             user_checker: App\Security\UserChecker
             guard:
                 authenticators:
