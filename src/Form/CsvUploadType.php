@@ -17,8 +17,7 @@ class CsvUploadType extends AbstractType
                 'attr' => [
                     'accept' => '.csv'
                 ],
-                'mapped' => false,
-                'required' => false,
+            'mapped' => false
             ]);
     }
 

@@ -105,10 +105,9 @@ class ParticipantController extends AbstractController
     #[Route('/admin/users', name: 'admin_users')]
     public function addUsers(Request $request, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, CampusRepository $campusRepository, ParticipantRepository $repository)
     {
-        set_time_limit(300);
-        $participants = $repository->getAllWithCampus();
         $fileForm = $this->createForm(CsvUploadType::class);
         $fileForm->handleRequest($request);
+        $participants = $repository->getAllWithCampus();
 
         if ($fileForm->isSubmitted() && $fileForm->isValid()) {
             $file = $fileForm->get('csv')->getData();
@@ -116,15 +115,26 @@ class ParticipantController extends AbstractController
             $fileName = $uploaderHelper->uploadFile($file, $destination);
             $rowNo = 0;
             $campus = $campusRepository->findAll();
+            $password = $passwordEncoder->encodePassword(new Participant(), "password123");
+            // $entityManager->getConnection()->getConfiguration()->setSQLLogger(null);
             // $fp is file pointer to file
             try {
                 if (($fp = fopen($destination . "/" . $fileName, "r")) !== FALSE) {
                     while (($row = fgetcsv($fp, 1000, ",")) !== FALSE) {
+                        //skip row 
                         if ($rowNo === 0) {
                             $rowNo++;
                             continue;
                         }
                         $participant = new Participant();
+                        $participant->setEmail($row[2]);
+                        $participantsWithSameEmail = array_values(array_filter($participants, function ($element) use ($row) {
+                            return str_contains($element->getEmail(), $row[2]);
+                        }));
+                        //skip participant if email already exists in the database
+                        if (count($participantsWithSameEmail) > 0) {
+                            continue;
+                        }
                         $camp = array_values(array_filter($campus, function ($element) use ($row) {
                             return $element->getId() === intval($row[1]);
                         }));
@@ -133,31 +143,41 @@ class ParticipantController extends AbstractController
                         } else {
                             $participant->setCampus($campus[0]);
                         }
-                        $participant->setEmail($row[2]);
                         if (intval($row[8]) === 1) {
                             $participant->setIsAdmin(true);
                             $participant->setRoles(["ROLE_ADMIN"]);
                         }
-                        $participant->setPassword($passwordEncoder->encodePassword(
-                            $participant,
-                            "password123"
-                        ));
+                        $participant->setPassword($password);
                         $participant->setFirstName($row[5]);
                         $participant->setLastName($row[6]);
                         $participant->setPhoneNumber($row[7]);
                         $participant->setIsActive(true);
                         $entityManager->persist($participant);
+
+                        //upload a batch of 25
+                        if ($rowNo % 25 == 0) {
+                            $entityManager->flush();
+                            // $entityManager->clear(); //causes error - multiple non-persisted entities ?? 
+                        }
                         $rowNo++;
                     }
                     fclose($fp);
                 }
                 $entityManager->flush();
-                $this->addFlash('success', ($rowNo - 1) . ' utilisateurs importés avec succés');
+                $entityManager->clear();
+                $rowNo -= 1;
+                if ($rowNo > 0) {
+                    $this->addFlash('success', $rowNo . ' utilisateurs importés avec succés');
+                } else {
+                    $this->addFlash('success', 'La base de données est à jour. 0 utilisateurs importés.');
+                }
             } catch (Exception $e) {
-                $this->addFlash('danger', 'Une erreur s\'est produite lors de l\'import : ' . $e->getMessage());
+                $this->addFlash('danger', 'Une erreur s\'est produite lors de l\'import du batch ' . round($rowNo / 25, 0) . ' : ' . $e->getMessage());
             }
             $uploaderHelper->deleteUploadedFile($destination . "/" . $fileName);
+            $participants = $repository->getAllWithCampus();
         }
+
 
         return $this->render('participant/add-new.html.twig', [
             'title' => 'Gestion des utilisateurs',
