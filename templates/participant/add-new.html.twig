@@ -1,6 +1,24 @@
 {% extends 'base.html.twig' %}
 {% form_theme fileForm 'bootstrap_4_layout.html.twig' %}
 
+{% block stylesheets %}
+<style>
+    .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+        background-color: #000;
+        opacity: .3;
+    }
+    .hidden {
+        display: none!important;
+    }
+</style>
+{% endblock %}
+
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
@@ -90,6 +108,10 @@
             </div>
         </div>
     </div>
+    <div id="spinner" class="overlay hidden d-flex justify-content-center align-items-center"> 
+            <div class="spinner-grow text-primary" role="status" style="width: 3rem; height: 3rem; z-index: 20;">
+        </div>
+    </div>
 {% endblock %}
 {% block javascripts %}
 
@@ -106,5 +128,12 @@
             let path = event.target.dataset.path;
             modalDeleteBtn.href = path;
         }
+
+        $(document).ready(()=>{
+            $('form').submit(() => {
+                $('#spinner').removeClass('hidden');
+            })
+        })
+
     </script>
 {% endblock %}
