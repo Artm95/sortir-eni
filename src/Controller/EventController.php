@@ -19,12 +19,21 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Error;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class EventController extends AbstractController
 {
+    /**
+     * Handling search on events
+     * @param Request $request
+     * @param EventRepository $repository
+     * @param EntityManagerInterface $manager
+     * @param StateUpdater $updater
+     * @return Response
+     */
     #[Route('/', name: 'event')]
     public function index(
         Request $request,
@@ -56,6 +65,12 @@ class EventController extends AbstractController
         );
     }
 
+    /**
+     * Show event's details page
+     * @param int $id
+     * @param EventRepository $repository
+     * @return Response
+     */
     #[Route(
         path: '/sortie/{id}',
         name: 'event_detail',
@@ -76,6 +91,13 @@ class EventController extends AbstractController
         }
     }
 
+    /**
+     * Handle singing in events
+     * @param int $id
+     * @param EventRepository $repository
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     #[Route(
         path: '/inscription-sortie/{id}',
         name: 'event_subscribe',
@@ -130,6 +152,13 @@ class EventController extends AbstractController
         }
     }
 
+    /**
+     * Handles unsubscribing for events
+     * @param int $id
+     * @param EventRepository $repository
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     #[Route(
         path: '/desistement-sortie/{id}',
         name: 'event_unsubscribe',
@@ -167,6 +196,12 @@ class EventController extends AbstractController
         }
     }
 
+    /**
+     * Handles publish event action
+     * @param int $id
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     #[Route(
         path: '/publication-sortie/{id}',
         name: 'event_publish',
@@ -202,6 +237,11 @@ class EventController extends AbstractController
         }
     }
 
+    /**
+     * Create and persist new event
+     * @param Request $request
+     * @return Response
+     */
     #[Route(path: '/create', name: 'event_new')]
     public function create(Request $request): Response
     {
@@ -236,6 +276,13 @@ class EventController extends AbstractController
         );
     }
 
+    /**
+     * Edit the event and persisting in database
+     * @param $id
+     * @param EventRepository $repository
+     * @param Request $request
+     * @return RedirectResponse|Response
+     */
     #[Route(
         path: '/edit-event/{id}',
         name: 'event_edit',
@@ -277,7 +324,12 @@ class EventController extends AbstractController
         }
     }
 
-
+    /**
+     * Helps to persist event to database
+     * @param $event
+     * @param string $state
+     * @return mixed
+     */
     private function saveEvent($event, string $state)
     {
         $entityManager = $this->getDoctrine()->getManager();
@@ -297,12 +349,23 @@ class EventController extends AbstractController
         return $event;
     }
 
+    /**
+     * Redirects to hime page with an error flash message
+     * @param $flashMessage
+     * @return RedirectResponse
+     */
     public function addFlashAndRedirectToHome($flashMessage)
     {
         $this->addFlash('danger', $flashMessage);
         return $this->redirectToRoute('event');
     }
 
+    /**
+     * @param $id
+     * @param Request $request
+     * @param EventRepository $eventRepo
+     * @return Response
+     */
     #[Route(
         path: '/cancel/{id}',
         name: 'event_cancel',

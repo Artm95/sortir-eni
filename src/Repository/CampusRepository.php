@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Campus;
+use App\Entity\Participant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,6 +19,18 @@ class CampusRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Campus::class);
+    }
+
+    /**
+     * Find campus by id or throws not found exception
+     * @param $id
+     * @return Campus
+     * @throws EntityNotFoundException
+     */
+    public function findOrFail($id){
+        $campus = $this->find($id);
+        if ($campus==null) throw new EntityNotFoundException("Le campus demandé n'existe pas");
+        return $campus;
     }
 
     // /**

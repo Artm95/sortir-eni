@@ -16,8 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class CampusController extends AbstractController
 {
     /**
-     * Affichage de la page avec la liste des campus
-     * Création d'un nouveau campus
+     * Rendering page with campuses' list
+     * Creation of new campus
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @return Response
@@ -50,7 +50,7 @@ class CampusController extends AbstractController
     }
 
     /**
-     * Modification du campus
+     * Edit campus and persist in database
      * @param $id
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -60,7 +60,8 @@ class CampusController extends AbstractController
     #[Route('admin/campus/edit/{id}', name: 'admin_campus_edit', requirements: ['id' => '\d+'])]
     public function edit($id, Request $request, EntityManagerInterface $entityManager, CampusRepository $campusRepository): Response
     {
-            $campus = $campusRepository->find($id);
+        try {
+            $campus = $campusRepository->findOrFail($id);
             $form = $this->createForm(CampusType::class, $campus);
             $form->handleRequest($request);
 
@@ -77,16 +78,19 @@ class CampusController extends AbstractController
                 }
             }
 
-        return $this->render('campus/index.html.twig', [
-            'form' => $form->createView(),
-            'title' => 'Modifier le campus',
-            'action'=>'Modifier',
-        ]);
-
+            return $this->render('campus/index.html.twig', [
+                'form' => $form->createView(),
+                'title' => 'Modifier le campus',
+                'action'=>'Modifier',
+            ]);
+        } catch (EntityNotFoundException $e) {
+            $this->addFlash('danger', $e->getMessage());
+            return $this->redirectToRoute('admin_campuses');
+        }
     }
 
     /**
-     * Suppression du campus
+     * Delete campus by id
      * @param $id
      * @param EntityManagerInterface $entityManager
      * @param CampusRepository $campusRepository
@@ -96,7 +100,7 @@ class CampusController extends AbstractController
     public function delete($id, EntityManagerInterface $entityManager, CampusRepository $campusRepository): Response
     {
         try {
-            $campus = $campusRepository->find($id);
+            $campus = $campusRepository->findOrFail($id);
             $entityManager->remove($campus);
             $entityManager->flush();
 
@@ -106,13 +110,13 @@ class CampusController extends AbstractController
             );
             return $this->redirectToRoute('admin_cities');
         } catch (EntityNotFoundException $e) {
-            $this->addFlash('danger', 'Cette campuse n\'existe pas ou a déjà été supprimé');
+            $this->addFlash('danger', 'Ce campus n\'existe pas ou a déjà été supprimé');
             return $this->redirectToRoute('admin_campuses');
         }
     }
 
     /**
-     * Envoie de données de tous les campus
+     * Send all campuses data
      * @param CampusRepository $repository
      * @param SerializerHelper $serializerHelper
      * @return Response

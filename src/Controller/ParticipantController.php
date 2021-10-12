@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +22,14 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class ParticipantController extends AbstractController
 {
-
+    /**
+     * Edit user profile
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param UploaderHelper $uploaderHelper
+     * @return Response
+     */
     #[Route('/edit-profile', name: 'participant_edit')]
     public function edit(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, UploaderHelper $uploaderHelper): Response
     {
@@ -63,6 +71,12 @@ class ParticipantController extends AbstractController
         ]);
     }
 
+    /**
+     * Fin user information by if and display it on user's profile page
+     * @param int $id
+     * @param ParticipantRepository $repository
+     * @return RedirectResponse|Response
+     */
     #[Route('/profile/{id}', name: 'user_detail', requirements: ['id' => '\d+'])]
     public function showProfile(int $id, ParticipantRepository $repository)
     {
@@ -78,6 +92,16 @@ class ParticipantController extends AbstractController
         }
     }
 
+    /**
+     * Add users from .csv file
+     * @param Request $request
+     * @param UploaderHelper $uploaderHelper
+     * @param EntityManagerInterface $entityManager
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param CampusRepository $campusRepository
+     * @param ParticipantRepository $repository
+     * @return Response
+     */
     #[Route('/admin/users', name: 'admin_users')]
     public function addUsers(Request $request, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, CampusRepository $campusRepository, ParticipantRepository $repository)
     {
@@ -142,6 +166,13 @@ class ParticipantController extends AbstractController
         ]);
     }
 
+    /**
+     * Create a new user via creation form
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @return Response
+     */
     #[Route('/admin/users/ajout', name: 'admin_users_add')]
     public function addOne(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder): Response
     {
@@ -171,6 +202,13 @@ class ParticipantController extends AbstractController
         ]);
     }
 
+    /**
+     * Activate and deactivate users
+     * @param int $id
+     * @param ParticipantRepository $repository
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     #[Route(
         path: '/admin/users/activation/{id}',
         name: 'admin_users_active',
@@ -199,6 +237,13 @@ class ParticipantController extends AbstractController
         }
     }
 
+    /**
+     * Delete a user by id
+     * @param int $id
+     * @param ParticipantRepository $repository
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     #[Route(
         path: '/admin/users/supprimer/{id}',
         name: 'admin_users_remove',
