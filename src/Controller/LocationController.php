@@ -19,7 +19,7 @@ class LocationController extends AbstractController
 
 
     /**
-     * @Route("/post/location", methods={"POST"})
+     * @Route("/post/location", methods={"POST"}, name="locations_post")
      * @param Request $request
      * @param CityRepository $cityRepository
      * @param ValidatorInterface $validator
@@ -64,7 +64,7 @@ class LocationController extends AbstractController
     }
 
     /**
-     * @Route("/get/locations", name="locations")
+     * @Route("/get/locations", name="locations_get")
      * @param LocationRepository $repository
      * @param SerializerHelper $serializerHelper
      * @return Response
