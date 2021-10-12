@@ -20,6 +20,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Error;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,7 +42,8 @@ class EventController extends AbstractController
         Request $request,
         EventRepository $repository,
         EntityManagerInterface $manager,
-        StateUpdater $updater
+        StateUpdater $updater,
+        PaginatorInterface $paginator
     ): Response {
         $detect = new MobileDetect();
         $updater->updateEventsState($manager);
@@ -65,12 +67,14 @@ class EventController extends AbstractController
             } else {
                 $events = $repository->getAllBasic();
             }
+            $pagination = $paginator->paginate($events, $request->query->getInt('page', 1), 10);
             return $this->render(
                 'event/index.html.twig',
                 [
                     'events' => $events,
                     'searchForm' => $form->createView(),
-                    'isMobile' => false
+                    'isMobile' => false,
+                    'pagination' => $pagination
                 ]
             );
         }

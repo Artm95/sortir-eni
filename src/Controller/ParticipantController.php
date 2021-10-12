@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -103,7 +104,7 @@ class ParticipantController extends AbstractController
      * @return Response
      */
     #[Route('/admin/users', name: 'admin_users')]
-    public function addUsers(Request $request, UploaderHelper $uploaderHelper, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, CampusRepository $campusRepository, ParticipantRepository $repository)
+    public function addUsers(Request $request, UploaderHelper $uploaderHelper, PaginatorInterface $paginator, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, CampusRepository $campusRepository, ParticipantRepository $repository)
     {
         $fileForm = $this->createForm(CsvUploadType::class);
         $fileForm->handleRequest($request);
@@ -178,11 +179,12 @@ class ParticipantController extends AbstractController
             $participants = $repository->getAllWithCampus();
         }
 
+        $pagination = $paginator->paginate($participants, $request->query->getInt('page', 1), 10);
 
         return $this->render('participant/add-new.html.twig', [
             'title' => 'Gestion des utilisateurs',
             'fileForm' => $fileForm->createView(),
-            'participants' => $participants
+            'participants' => $pagination,
         ]);
     }
 

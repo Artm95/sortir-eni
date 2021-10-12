@@ -129,7 +129,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for event in events %}
+                {% for event in pagination %}
                     <tr>
                         <td class="font-weight-bold"><a href="{{ path('event_detail', { id : event.id }) }}" class="text-light">{{ event.name }}</a></td>
                         <td>{{ event.startDate|date('d/m/Y H:m') }}</td>
@@ -181,6 +181,9 @@
                 {% endfor %}
                 </tbody>
             </table>
+            <div class="navigation d-flex justify-content-center">
+                {{ knp_pagination_render(pagination) }}
+            </div>
         </div>
     </div>
 
