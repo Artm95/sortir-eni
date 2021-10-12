@@ -1,5 +1,9 @@
 export default class Location{
-    constructor(locationsData) {
+    constructor(locationsData, containerId) {
+        this.map = L.mapbox.map(containerId)
+            .setView([48.117266, -1.6777926], 6)
+            .addLayer(L.mapbox.styleLayer('mapbox://styles/mapbox/streets-v11'));
+
         //setting constructor variable
         this.allLocationsData = locationsData;
         //Getting all necessary dom elements
@@ -68,33 +72,6 @@ export default class Location{
     }
 
     /**
-     * Submit locations form to save new location in database
-     */
-    submitLocationForm(){
-        const errorsAlertEl = document.getElementById('location-validation-errors')
-        let form = document.forms.location;
-        let formData = new FormData(form);
-
-        axios.post(pathPost, formData).then(async(response)=>{
-            $('#location-modal').modal('hide')
-            await this.addLocation(response.data);
-            await this.renderLocations(this.getLocationsByCity(response.data.city.id))
-            this.citySelect.value = response.data.city.id
-            this.locationSelect.value = response.data.id
-            this.setLocationData(response.data)
-        }).catch((error)=>{
-            errorsAlertEl.innerHTML = "";
-            errorsAlertEl.classList.remove('d-none');
-            error.response.data.forEach(item=>{
-                let element = document.createElement('p')
-                element.innerHTML = item
-                errorsAlertEl.append(element)
-            })
-        })
-
-    }
-
-    /**
      * Render a select with the list of location
      * @param cityLocations: locations to render
      */
@@ -111,15 +88,27 @@ export default class Location{
     }
 
     /**
-     * Renders location data into input fields
+     * Renders location data into input fields and show
      * @param location
      */
     setLocationData(location){
+        this.map.setView([location.latitude, location.longitude], 14);
+        if (!this.marker) {
+            this.marker = L.marker([location.latitude, location.longitude], {
+                icon: L.mapbox.marker.icon({
+                    'marker-color': '#f86767'
+                })
+            });
+            this.marker.addTo(this.map);
+        } else {
+            this.marker.setLatLng(L.latLng(location.latitude, location.longitude));
+        }
         this.streetField.value = location.street;
         this.zipField.value = location.city.zipCode;
         this.latitudeField.value = location.latitude;
         this.longitudeField.value = location.longitude;
         this.citySelect.value = location.city.id
+
     }
 
     /**

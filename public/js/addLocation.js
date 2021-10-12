@@ -1,7 +1,10 @@
 import Location from "./Location.js";
+import newLocationForm from './newLocationForm.js';
+
 window.onload = () => {
     axios.get(pathGet).then((response)=>{
-        new Location(response.data);
+        const location = new Location(response.data, 'map');
+        new newLocationForm('mapAdd', location)
     })
 
 }
