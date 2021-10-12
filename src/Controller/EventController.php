@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Event;
 use App\Entity\Form\SearchEvent;
 use App\Entity\Location;
+use App\Entity\Participant;
 use App\Entity\State;
 use App\Form\CancelEventType;
 use App\Form\CityChoiceType;
@@ -14,6 +15,7 @@ use App\Form\SearchEventType;
 use App\Repository\EventRepository;
 use App\Utils\StateUpdater;
 use App\Utils\UploaderHelper;
+use Detection\MobileDetect;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -41,28 +43,39 @@ class EventController extends AbstractController
         EntityManagerInterface $manager,
         StateUpdater $updater
     ): Response {
+        $detect = new MobileDetect();
         $updater->updateEventsState($manager);
-        $searchEvent = new SearchEvent();
-        $form = $this->createForm(SearchEventType::class, $searchEvent);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            $searchEvent = $form->getData();
-            $events = $repository->search(
-                $searchEvent,
-                $this->getUser()
+        $user = $this->getUser();
+        //if mobile version we send only user's campus events
+        if ($detect->isMobile() && !$detect->isTablet()){
+            $events = $repository->findBy(["campus" => $user->getCampus()->getId()]);
+            return $this->render('event/index.html.twig', [ 'events' => $events, 'isMobile' => true]);
+        }else{
+            $searchEvent = new SearchEvent();
+            $form = $this->createForm(SearchEventType::class, $searchEvent);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted()) {
+                $searchEvent = $form->getData();
+                $events = $repository->search(
+                    $searchEvent,
+                    $user
+                );
+            } else {
+                $events = $repository->getAllBasic();
+            }
+            return $this->render(
+                'event/index.html.twig',
+                [
+                    'events' => $events,
+                    'searchForm' => $form->createView(),
+                    'isMobile' => false
+                ]
             );
-        } else {
-            $events = $repository->getAllBasic();
+
         }
 
-        return $this->render(
-            'event/index.html.twig',
-            [
-                'events' => $events,
-                'searchForm' => $form->createView()
-            ]
-        );
     }
 
     /**
@@ -245,6 +258,10 @@ class EventController extends AbstractController
     #[Route(path: '/create', name: 'event_new')]
     public function create(Request $request): Response
     {
+        $detect = new MobileDetect();
+        if ($detect->isMobile() && !$detect->isTablet())
+            return $this->addFlashAndRedirectToHome("Vous ne pouvez pas créer des évènement en version mobile");
+
         $event = new Event();
         $user = $this->getUser();
         $event->setCampus($user->getCampus());
@@ -290,6 +307,9 @@ class EventController extends AbstractController
     )]
     public function edit($id, EventRepository $repository, Request $request)
     {
+        $detect = new MobileDetect();
+        if ($detect->isMobile() && !$detect->isTablet())
+            return $this->addFlashAndRedirectToHome("Vous ne pouvez pas modifier des évènement en version mobile");
         $user = $this->getUser();
         try {
             $event = $repository->getAllEventDataById($id);

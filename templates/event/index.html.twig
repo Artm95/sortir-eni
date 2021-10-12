@@ -13,6 +13,7 @@
             </div>
         {% endfor %}
     {% endfor %}
+    {% if not isMobile %}
     <div class="banner">
         <div class="search-form">
             <div class="greetings">
@@ -106,6 +107,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="mt-4 row justify-content-center">
         <div class="col-auto">
@@ -114,33 +116,38 @@
                 <tr>
                     <th>Nom de la sortie</th>
                     <th>Date de la sortie</th>
-                    <th>Clôture</th>
-                    <th>Inscrits/places</th>
-                    <th>Etat</th>
-                    <th>Inscrit</th>
-                    <th>Organisateur</th>
-                    <th>Actions</th>
+                    {% if not isMobile %}
+                    <th >Clôture</th>
+                    <th >Inscrits/places</th>
+                    <th >Etat</th>
+                    <th >Inscrit</th>
+                    <th >Organisateur</th>
+                    <th >Actions</th>
+                    {% else %}
+                    <th>Lieu</th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
                 {% for event in events %}
                     <tr>
-                        <td class="font-weight-bold">{{ event.name }}</td>
-                        <td>{{ event.startDate|date('d/m/Y') }}</td>
-                        <td>{{ event.signUpDeadline|date('d/m/Y') }}</td>
-                        <td>{{ event.participants.count() }}/{{ event.maxParticipants }}</td>
-                        <td><span class="badge badge-info">{{ event.state.label }}</span></td>
-                        <td>
+                        <td class="font-weight-bold"><a href="{{ path('event_detail', { id : event.id }) }}">{{ event.name }}</a></td>
+                        <td>{{ event.startDate|date('d/m/Y H:m') }}</td>
+                        {% if not isMobile %}
+                        <td >{{ event.signUpDeadline|date('d/m/Y') }}</td>
+                        <td >{{ event.participants.count() }}/{{ event.maxParticipants }}</td>
+                        <td ><span class="badge badge-info">{{ event.state.label }}</span></td>
+                        <td >
                             {% if app.user.isParticipant(event) %}
                                 <i class="fas fa-check text-success"></i>
                             {% endif %}
                         </td>
-                        <td>
+                        <td >
                             <a href="{{ path('user_detail', { id : event.organizer.id }) }}" id="organizer-link">
                                 {{ event.organizer.nickname ? event.organizer.nickname : event.organizer.firstName ~ ' ' ~ event.organizer.lastName }}
                             </a>
                         </td>
-                        <td>
+                        <td >
                             <div class="d-flex flex-column">
                                 <a href="{{ path('event_detail', { id : event.id }) }}" id="show-btn"><i
                                             class="fas fa-eye"></i> Afficher</a>
@@ -164,8 +171,12 @@
                                     {% endif %}
                                 {% endif %}
                             </div>
-
                         </td>
+                        {% else %}
+                            <td>
+                                {{ event.location.city.name }}
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
                 </tbody>
