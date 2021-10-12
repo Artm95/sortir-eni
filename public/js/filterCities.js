@@ -7,7 +7,7 @@ const renderCities = (data) => {
                     <td>${city.zipCode}</td>
                     <td>
                         <a href="${pathname}/admin/cities/edit/${city.id}" class="btn btn-sm btn-warning">Modifier</a>
-                        <a href="${pathname}/admin/cities/delete/${city.id}" class="btn btn-sm btn-danger">Supprimer</a>
+                        <button data-path="${pathname}/admin/cities/delete/${city.id}" onclick="setDeletePathOnModal()" data-toggle="modal" data-target="#confirm-modal" class="btn btn-sm btn-danger">Supprimer</button>
                     </td>
                 </tr>`;
     }));
@@ -31,3 +31,13 @@ $(document).ready(() => {
         filterCities($('#search').val());
     })
 })
+
+
+/**
+ * Set the link to delete campus on "delete" button of a modal
+ */
+function setDeletePathOnModal(){
+    const modalDeleteBtn = document.getElementById("modal-delete-btn");
+    let path = event.target.dataset.path;
+    modalDeleteBtn.href = path;
+}

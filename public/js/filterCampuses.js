@@ -1,6 +1,7 @@
 //Getting necesssary dom elements
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-input");
+const modalDeleteBtn = document.getElementById("modal-delete-btn");
 
 //fetching data
 axios.get(pathGetCampus).then(response=>{
@@ -29,7 +30,7 @@ function renderCampuses(campuses){
                     <td>${campus.name}</td>
                     <td>
                         <a href="${editPathId}" class="btn btn-sm btn-warning">Modifier</a>
-                        <a href="${deletePathId}" class="btn btn-sm btn-danger">Supprimer</a>
+                        <button data-path="${deletePathId}" onclick="setDeletePathOnModal()" data-toggle="modal" data-target="#confirm-modal" class="btn btn-sm btn-danger">Supprimer</button>
                     </td>
                 </tr>`
         tableBody.append(row)
@@ -47,4 +48,12 @@ function filterCampuses(campuses, searchValue){
         return (campus.name).toLowerCase().includes(searchValue);
     })
     renderCampuses(campusesFiltered)
+}
+
+/**
+ * Set the link to delete campus on "delete" button of a modal
+ */
+function setDeletePathOnModal(){
+    let path = event.target.dataset.path;
+    modalDeleteBtn.href = path;
 }

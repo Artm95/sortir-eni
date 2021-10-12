@@ -37,6 +37,25 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="confirm-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title">Êtes-vous sur de vouloir supprimer cette ville ?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><i class="fas fa-exclamation-triangle mr-2 text-danger"></i> Attention si vous supprimez la ville, tous les lieux et les évènements liés à celle-là seront supprimés également</p>
+                </div>
+                <div class="modal-footer">
+                    <a type="button" id="modal-delete-btn" class="btn btn-danger">Supprimer</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 {% block javascripts %}
         <script src="{{ asset('js/filterCities.js') }}" ></script>

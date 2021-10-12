@@ -57,16 +57,36 @@
                                 >
                                     {{ participant.isActive ? 'Désactiver' : 'Activer' }}
                                 </a>
-                                <a href="{{ path('admin_users_remove', { id: participant.id }) }}"
+                                <button onclick="setDeletePathOnModal()" data-toggle="modal" data-target="#confirm-modal" data-path="{{ path('admin_users_remove', { id: participant.id }) }}"
                                         class="btn btn-sm btn-danger">
                                     Supprimer
-                                </a>
+                                </button>
                                 {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirm-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title">Êtes-vous sur de vouloir supprimer l'utilisateur ?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><i class="fas fa-exclamation-triangle mr-2 text-danger"></i> Attention si vous supprimez l'utilisateurs, tous les évènements liés au celui-ci seront supprimés également</p>
+                </div>
+                <div class="modal-footer">
+                    <a type="button" id="modal-delete-btn" class="btn btn-danger">Supprimer</a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                </div>
             </div>
         </div>
     </div>
@@ -80,5 +100,11 @@
             inputFile.parentNode.querySelector('.custom-file-label')
                 .innerHTML = inputFile.files[0].name;
         });
+
+        function setDeletePathOnModal(){
+            const modalDeleteBtn = document.getElementById("modal-delete-btn");
+            let path = event.target.dataset.path;
+            modalDeleteBtn.href = path;
+        }
     </script>
 {% endblock %}
