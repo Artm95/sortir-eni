@@ -131,7 +131,7 @@
                 <tbody>
                 {% for event in events %}
                     <tr>
-                        <td class="font-weight-bold"><a href="{{ path('event_detail', { id : event.id }) }}">{{ event.name }}</a></td>
+                        <td class="font-weight-bold"><a href="{{ path('event_detail', { id : event.id }) }}" class="text-light">{{ event.name }}</a></td>
                         <td>{{ event.startDate|date('d/m/Y H:m') }}</td>
                         {% if not isMobile %}
                         <td >{{ event.signUpDeadline|date('d/m/Y') }}</td>

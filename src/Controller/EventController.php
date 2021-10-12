@@ -73,9 +73,7 @@ class EventController extends AbstractController
                     'isMobile' => false
                 ]
             );
-
         }
-
     }
 
     /**
