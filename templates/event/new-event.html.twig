@@ -47,6 +47,7 @@
                         </div>
                     </div>
                 </div>
+                <div id="map"></div>
             </fieldset>
         </div>
         </div>
@@ -60,7 +61,7 @@
 
     <!-- Modal -->
     <div class="modal fade" id="location-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered text-dark" role="document">
+        <div class="modal-dialog modal-dialog-centered text-dark modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">Ajouter un lieu</h5>
@@ -72,6 +73,17 @@
                     <div class="alert alert-danger d-none" id="location-validation-errors" role="alert">
                     </div>
                     {{ form(locationForm) }}
+                    <div class="row">
+                        <div class="col-6">
+                            <div id="mapAdd"></div>
+                        </div>
+                        <div class="col-6">
+                            <ul id="suggestions-list">
+
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
@@ -83,10 +95,20 @@
     
 {% endblock %}
 
+{% block stylesheets %}
+    <link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' />
+    <style>
+        #map { height: 20rem; }
+        #mapAdd { height: 20rem; }
+    </style>
+{% endblock %}
 {% block javascripts %}
-    <script>    
+    <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
+    <script>
         const pathGet = "{{ path('locations_get') }}" ;
         const pathPost = "{{ path('locations_post') }}" ;
+        const pathCities = "{{ path('admin_cities_get') }}" ;
+        L.mapbox.accessToken = 'pk.eyJ1IjoiYXJ0aHVybTk1IiwiYSI6ImNrdW5zM29uODB3b3AzMnBmeHZuc25sbDIifQ.jf0ITfjWQpkv4Z524j54Fw';
     </script>
     <script type="module" src="{{ asset('js/addLocation.js') }}"  crossorigin="anonymous"></script>
 
