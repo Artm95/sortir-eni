@@ -129,7 +129,7 @@ class Participant implements UserInterface
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(string|null $email): self
     {
         $this->email = $email;
 
@@ -206,7 +206,7 @@ class Participant implements UserInterface
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setFirstName(string|null $firstName): self
     {
         $this->firstName = $firstName;
 
@@ -218,7 +218,7 @@ class Participant implements UserInterface
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): self
+    public function setLastName(string|null $lastName): self
     {
         $this->lastName = $lastName;
 
@@ -230,7 +230,7 @@ class Participant implements UserInterface
         return $this->phoneNumber;
     }
 
-    public function setPhoneNumber(string $phoneNumber): self
+    public function setPhoneNumber(string|null $phoneNumber): self
     {
         $phoneNumber = $this->formatPhoneNumber($phoneNumber);
         $this->phoneNumber = $phoneNumber;

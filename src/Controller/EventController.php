@@ -52,7 +52,8 @@ class EventController extends AbstractController
         //if mobile version we send only user's campus events
         if ($detect->isMobile() && !$detect->isTablet()){
             $events = $repository->findBy(["campus" => $user->getCampus()->getId()]);
-            return $this->render('event/index.html.twig', [ 'events' => $events, 'isMobile' => true]);
+            $pagination = $paginator->paginate($events, $request->query->getInt('page', 1), 10);
+            return $this->render('event/index.html.twig', [ 'events' => $events, 'isMobile' => true, 'pagination' => $pagination]);
         }else{
             $searchEvent = new SearchEvent();
             $form = $this->createForm(SearchEventType::class, $searchEvent);
@@ -311,7 +312,7 @@ class EventController extends AbstractController
     {
         $detect = new MobileDetect();
         if ($detect->isMobile() && !$detect->isTablet())
-            return $this->addFlashAndRedirectToHome("Vous ne pouvez pas modifier des évènement en version mobile");
+            return $this->addFlashAndRedirectToHome("Vous ne pouvez pas modifier des évènements en version mobile");
         $user = $this->getUser();
         try {
             $event = $repository->getAllEventDataById($id);

@@ -108,7 +108,7 @@ class CampusController extends AbstractController
                 'success',
                 'Campus  ' . $campus->getName() . ' supprimé'
             );
-            return $this->redirectToRoute('admin_cities');
+            return $this->redirectToRoute('admin_campuses');
         } catch (EntityNotFoundException $e) {
             $this->addFlash('danger', 'Ce campus n\'existe pas ou a déjà été supprimé');
             return $this->redirectToRoute('admin_campuses');

@@ -11,7 +11,7 @@
             <div class="form mt-3 mb-3">
                 {{ form_start(form) }}
                 {{ form_widget(form) }}
-                <button type="submit" class="btn btn-primary">{{ action }}</button>
+                <button type="submit" id="submit-btn" class="btn btn-primary">{{ action }}</button>
                 <a class="btn btn-secondary" href="{{ action is same as('Modifier') ? path('admin_campuses') : path('event') }}">Annuler</a>
                 {{ form_end(form) }}
             </div>
