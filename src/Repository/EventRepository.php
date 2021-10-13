@@ -31,6 +31,8 @@ class EventRepository extends ServiceEntityRepository {
             ->join('e.state', 's')
             ->leftJoin('e.participants', 'p' )
             ->where("s.label != 'Activité historisée'")
+            ->andWhere("s.label !='Activité terminée'")
+            ->orderBy('e.startDate', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -114,7 +116,10 @@ class EventRepository extends ServiceEntityRepository {
         }
         if ($searchEvent->isOver() && $user) {
             $query->andWhere('s.label IN (:labels)')
-                ->setParameter('labels', ['Activité historisée', 'Activité terminée']);
+            ->setParameter('labels', ['Activité historisée', 'Activité terminée'])
+            ->orderBy('e.startDate', 'DESC');
+        } else {
+            $query->orderBy('e.startDate', 'ASC');
         }
 
         return $query->getQuery()->getResult();
