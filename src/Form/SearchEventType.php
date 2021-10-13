@@ -54,6 +54,10 @@ class SearchEventType extends AbstractType
                 'label' => "Sorties passée",
                 'required' => false
             ])
+            ->add('open', CheckboxType::class, [
+                'label' => "Sorties ouvertes",
+                'required' => false
+            ])
         ;
     }
 

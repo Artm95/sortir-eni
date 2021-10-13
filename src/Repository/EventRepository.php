@@ -108,8 +108,13 @@ class EventRepository extends ServiceEntityRepository {
             $query->andWhere(':notParticipant NOT MEMBER OF e.participants')
                 ->setParameter('notParticipant', $user);
         }
+        if ($searchEvent->isOpen()) {
+            $query->andWhere('s.label = :label')
+                ->setParameter('label', 'Ouverte');
+        }
         if ($searchEvent->isOver() && $user) {
-            $query->andWhere('e.startDate < CURRENT_TIMESTAMP()');
+            $query->andWhere('s.label IN (:labels)')
+                ->setParameter('labels', ['Activité historisée', 'Activité terminée']);
         }
 
         return $query->getQuery()->getResult();
