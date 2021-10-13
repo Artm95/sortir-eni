@@ -2,7 +2,7 @@ export default class newLocationForm {
     constructor(containerId, suggestionsContainer, dataPath, submitPath, instructionsContainer = null, eventForm = null) {
         this.dataPath = dataPath;
         this.submitPath = submitPath;
-        this.initialise(containerId, suggestionsContainer, instructionsContainer, eventForm = null);
+        this.initialise(containerId, suggestionsContainer, instructionsContainer, eventForm);
     }
 
     async initialise(containerId, suggestionsContainer, instructionsContainer = null, eventForm = null) {

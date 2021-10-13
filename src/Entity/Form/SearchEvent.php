@@ -36,6 +36,9 @@ class SearchEvent {
     #[Assert\Type('bool')]
     public ?bool $over = null;
 
+    #[Assert\Type('bool')]
+    public ?bool $open = null;
+
     /**
      * @return string|null
      */
@@ -132,6 +135,20 @@ class SearchEvent {
      */
     public function setOver(bool $over): void {
         $this->over = $over;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isOpen(): ?bool {
+        return $this->open;
+    }
+
+    /**
+     * @param bool $open
+     */
+    public function setOpen(bool $open): void {
+        $this->open = $open;
     }
 
     /**
