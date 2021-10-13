@@ -166,6 +166,6 @@ class Location
 
     public function __toString(){
         return $this->name . ", " . $this->street . ", " . $this->city->getName() . ", " . $this->city->getZipCode()
-            . ", lattitude : " . $this->latitude . ", longitude : " . $this->longitude;
+            . ", \n lattitude : " . $this->latitude . ", longitude : " . $this->longitude;
     }
 }
