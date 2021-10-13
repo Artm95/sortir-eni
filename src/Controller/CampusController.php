@@ -6,6 +6,7 @@ use App\Entity\Campus;
 use App\Form\CampusType;
 use App\Repository\CampusRepository;
 use App\Utils\SerializerHelper;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -72,8 +73,8 @@ class CampusController extends AbstractController
                     $entityManager->flush();
                     $this->addFlash('success', 'Campus modifié : ' . $campus->getName());
                     return $this->redirectToRoute('admin_campuses');
-                } catch (\Exception $e) {
-                    $this->addFlash('danger', 'Erreur de traitement : ' . $e->getMessage());
+                } catch (UniqueConstraintViolationException $e) {
+                    $this->addFlash('danger', 'Ce campus existe déjà');
                     return $this->redirectToRoute('admin_campuses');
                 }
             }

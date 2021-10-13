@@ -6,6 +6,8 @@ use App\Entity\City;
 use App\Form\CityType;
 use App\Repository\CityRepository;
 use App\Utils\SerializerHelper;
+use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
@@ -18,7 +20,7 @@ class CityController extends AbstractController
 {
 
     #[Route('admin/cities', name: 'admin_cities')]
-    public function index(Request $request, EntityManagerInterface $entityManager, CityRepository $cityRepository): Response
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $city = new City();
         $form = $this->createForm(CityType::class, $city);
@@ -29,10 +31,10 @@ class CityController extends AbstractController
                 $city = $form->getData();
                 $entityManager->persist($city);
                 $entityManager->flush();
-                $this->addFlash('success', 'Ville rajouté : ' . $city->getName() . ' ' . $city->getZipCode());
+                $this->addFlash('success', 'Ville rajoutée : ' . $city->getName() . ' ' . $city->getZipCode());
                 return $this->redirectToRoute('admin_cities');
-            } catch (Exception $e) {
-                $this->addFlash('danger', 'Erreur de traitement : ' . $e->getMessage());
+            } catch (UniqueConstraintViolationException $e) {
+                $this->addFlash('danger', 'Erreur de traitement : une ville avec ce code postal existe déjà');
             }
         }
 
@@ -47,7 +49,7 @@ class CityController extends AbstractController
     public function delete($id, EntityManagerInterface $entityManager, CityRepository $cityRepository): Response
     {
         try {
-            $city = $cityRepository->find($id);
+            $city = $cityRepository->findOrFail($id);
             //TODO delete related events ?? 
             $entityManager->remove($city);
             $entityManager->flush();
@@ -66,27 +68,32 @@ class CityController extends AbstractController
     #[Route('admin/cities/edit/{id}', name: 'admin_city_edit', requirements: ['id' => '\d+'])]
     public function edit($id, Request $request, EntityManagerInterface $entityManager, CityRepository $cityRepository): Response
     {
-        $city = $cityRepository->find($id);
-        $form = $this->createForm(CityType::class, $city);
-        $form->handleRequest($request);
+        try {
+            $city = $cityRepository->findOrFail($id);
+            $form = $this->createForm(CityType::class, $city);
+            $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $city = $form->getData();
-                $entityManager->persist($city);
-                $entityManager->flush();
-                $this->addFlash('success', 'Ville modifié : ' . $city->getName() . ' ' . $city->getZipCode());
-                return $this->redirectToRoute('admin_cities');
-            } catch (Exception $e) {
-                $this->addFlash('danger', 'Erreur de traitement : ' . $e->getMessage());
+            if ($form->isSubmitted() && $form->isValid()) {
+                try {
+                    $city = $form->getData();
+                    $entityManager->persist($city);
+                    $entityManager->flush();
+                    $this->addFlash('success', 'Ville modifiée   : ' . $city->getName() . ' ' . $city->getZipCode());
+                    return $this->redirectToRoute('admin_cities');
+                } catch (Exception $e) {
+                    $this->addFlash('danger', 'Erreur de traitement : ' . $e->getMessage());
+                }
             }
-        }
 
-        return $this->render('city/index.html.twig', [
-            'controller_name' => 'CityController',
-            'form' => $form->createView(),
-            'title' => 'Gérer les villes',
-        ]);
+            return $this->render('city/index.html.twig', [
+                'controller_name' => 'CityController',
+                'form' => $form->createView(),
+                'title' => 'Gérer les villes',
+            ]);
+        } catch (EntityNotFoundException $e) {
+            $this->addFlash('danger', $e->getMessage());
+            return $this->redirectToRoute('admin_cities');
+        }
     }
 
     #[Route('admin/get/cities', name: 'admin_cities_get')]

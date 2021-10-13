@@ -9,7 +9,6 @@ use App\Form\ProfileType;
 use App\Repository\CampusRepository;
 use App\Repository\ParticipantRepository;
 use App\Utils\UploaderHelper;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
