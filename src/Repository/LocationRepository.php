@@ -20,7 +20,7 @@ class LocationRepository extends ServiceEntityRepository
     }
 
      /**
-      * @return Location[] Returns an array of Location objects
+      * @return Location[] Returns an array of EventLocation objects
       */
 
     public function findAllWithCity()
@@ -35,7 +35,7 @@ class LocationRepository extends ServiceEntityRepository
 
 
     /*
-    public function findOneBySomeField($value): ?Location
+    public function findOneBySomeField($value): ?EventLocation
     {
         return $this->createQueryBuilder('l')
             ->andWhere('l.exampleField = :val')

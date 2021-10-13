@@ -22,7 +22,7 @@
             {{form_row(eventForm.city)}}
             <div class="row ml-0">
             {{form_row(eventForm.location)}}
-            <a href="#" data-toggle="modal" data-target="#location-modal" class="btn btn-primary align-self-end ml-3" style="margin-bottom: 1rem; height: calc(1.5em + .75rem + 2px);"><i class="fas fa-plus"></i></a>
+            <a id="modal-button" href="#" data-toggle="modal" data-target="#location-modal" class="btn btn-primary align-self-end ml-3" style="margin-bottom: 1rem; height: calc(1.5em + .75rem + 2px);"><i class="fas fa-plus"></i></a>
             </div>
             <fieldset disabled>
                 <div class="form-group">
@@ -78,6 +78,7 @@
                             <div id="mapAdd"></div>
                         </div>
                         <div class="col-6">
+                            <p id="map-instructions"></p>
                             <ul id="suggestions-list">
 
                             </ul>
@@ -105,8 +106,8 @@
 {% block javascripts %}
     <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
     <script>
-        const pathGet = "{{ path('locations_get') }}" ;
-        const pathPost = "{{ path('locations_post') }}" ;
+        const pathLocations = "{{ path('locations_get') }}" ;
+        const pathPostCity = "{{ path('locations_post') }}" ;
         const pathCities = "{{ path('admin_cities_get') }}" ;
         L.mapbox.accessToken = 'pk.eyJ1IjoiYXJ0aHVybTk1IiwiYSI6ImNrdW5zM29uODB3b3AzMnBmeHZuc25sbDIifQ.jf0ITfjWQpkv4Z524j54Fw';
     </script>
