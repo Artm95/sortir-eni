@@ -40,29 +40,33 @@ class ParticipantController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $form->getData();
-            $photo = $form["avatar"]->getData();
-            $newPass = $user->getPlainPassword();
-            if ($newPass !== null) {
-                $user->setPassword($passwordEncoder->encodePassword(
-                    $user,
-                    $user->getPlainPassword()
-                ));
-            }
-
-            if ($photo) {
-                $destination = $this->getParameter('kernel.project_dir') . '/public/uploads';
-                if ($user->getPhoto()) {
-                    //we delete the previous avater
-                    $uploaderHelper->deleteUploadedFile($destination . '/' . $user->getPhoto());
+            try {
+                $user = $form->getData();
+                $photo = $form["avatar"]->getData();
+                $newPass = $user->getPlainPassword();
+                if ($newPass !== null) {
+                    $user->setPassword($passwordEncoder->encodePassword(
+                        $user,
+                        $user->getPlainPassword()
+                    ));
                 }
-                //we create a unique file name based on user id
-                $fileName = $uploaderHelper->uploadFile($photo, $destination);
-                $user->setPhoto($fileName);
+
+                if ($photo) {
+                    $destination = $this->getParameter('kernel.project_dir') . '/public/uploads';
+                    if ($user->getPhoto()) {
+                        //we delete the previous avater
+                        $uploaderHelper->deleteUploadedFile($destination . '/' . $user->getPhoto());
+                    }
+                    //we create a unique file name based on user id
+                    $fileName = $uploaderHelper->uploadFile($photo, $destination);
+                    $user->setPhoto($fileName);
+                }
+                $entityManager->persist($user);
+                $entityManager->flush();
+                $this->addFlash('success', 'Profil modifié avec succés.');
+            } catch (UniqueConstraintViolationException $e) {
+                $this->addFlash('danger', 'Un utilisateur avec cet email existe déjà');
             }
-            $entityManager->persist($user);
-            $entityManager->flush();
-            $this->addFlash('success', 'Profil modifié avec succés.');
         }
 
         return $this->render('participant/edit-profile.html.twig', [
