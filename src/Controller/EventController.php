@@ -88,7 +88,7 @@ class EventController extends AbstractController
      * @return Response
      */
     #[Route(
-        path: '/sortie/{id}',
+        path: '/event/{id}',
         name: 'event_detail',
         requirements: ['id' => '\d+']
     )]
@@ -115,7 +115,7 @@ class EventController extends AbstractController
      * @return Response
      */
     #[Route(
-        path: '/inscription-sortie/{id}',
+        path: '/subscribe/{id}',
         name: 'event_subscribe',
         requirements: ['id' => '\d+']
     )]
@@ -176,7 +176,7 @@ class EventController extends AbstractController
      * @return Response
      */
     #[Route(
-        path: '/desistement-sortie/{id}',
+        path: '/unsubscribe/{id}',
         name: 'event_unsubscribe',
         requirements: ['id' => '\d+']
     )]
@@ -219,7 +219,7 @@ class EventController extends AbstractController
      * @return Response
      */
     #[Route(
-        path: '/publication-sortie/{id}',
+        path: '/publish/{id}',
         name: 'event_publish',
         requirements: ['id' => '\d+']
     )]
@@ -373,7 +373,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * Redirects to hime page with an error flash message
+     * Redirects to home page with an error flash message
      * @param $flashMessage
      * @return RedirectResponse
      */
