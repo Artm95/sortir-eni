@@ -69,8 +69,11 @@ class AppFixtures extends Fixture
                 'password123'
             ));
             if ($i == 0) {
-                $participants[$i]->setRoles(array('ROLE_ADMIN'));
+                $participants[$i]->setRoles(array('ROLE_USER', 'ROLE_ADMIN'));
                 $participants[$i]->setIsAdmin(true);
+            } else {
+                $participants[$i]->setRoles(array('ROLE_USER'));
+                $participants[$i]->setIsAdmin(false);
             }
             $manager->persist($participants[$i]);
         }
@@ -86,21 +89,37 @@ class AppFixtures extends Fixture
             $locations[$i]->setCity($city);
             $manager->persist($locations[$i]);
         }
-
+        $events = array();
         for ($j = 0; $j < 100; $j++) {
-            $event = new Event();
-            $event->setName($faker->words(3, true));
-            $event->setDuration($faker->numberBetween(15, 180));
-            $event->setStartDate($faker->dateTimeBetween('-2 months', '+2 months'));
-            $event->setSignUpDeadline(date_sub($event->getStartDate(), new \DateInterval('P' . rand(1, 10) . 'D')));
-            $event->setMaxParticipants($faker->numberBetween(2, 30));
-            $event->setState($states[0]);
+            $events[$j] = new Event();
+            $events[$j]->setName($faker->words(3, true));
+            $events[$j]->setDuration($faker->numberBetween(15, 180));
+            $startDate = $faker->dateTimeBetween('-2 months', '+2 months');
+            $events[$j]->setStartDate($startDate);
+            $events[$j]->setSignUpDeadline(date_sub($startDate, date_interval_create_from_date_string(rand(0, 10) . " days")));
+            $events[$j]->setMaxParticipants($faker->numberBetween(2, 30));
 
             // $event->setInfos($faker->paragraph(3), true);
-            $event->setLocation($locations[rand(0, count($locations) - 1)]);
-            $event->setOrganizer($participants[rand(0, count($participants) - 1)]);
-            $event->setCampus($campus[rand(0, count($campus) - 1)]);
-            $manager->persist($event);
+            $events[$j]->setLocation($locations[rand(0, count($locations) - 1)]);
+            $events[$j]->setState($states[1]);
+            $organizer = $participants[rand(0, count($participants) - 1)];
+            $events[$j]->setOrganizer($organizer);
+            $organizer->addSubscribedToEvent($events[$j]);
+            $events[$j]->setCampus($campus[rand(0, count($campus) - 1)]);
+            $manager->persist($events[$j]);
+        }
+
+        for ($i = 0; $i < 300; $i++) {
+            $randNum1 = rand(0, count($participants) - 1);
+            $randNum2 = rand(0, count($events) - 1);
+            $randEvent = $events[$randNum2];
+            if ($randEvent->getState()->getLabel() === 'Ouverte') {
+                $participants[$randNum1]->addSubscribedToEvent($randEvent);
+                $randEvent->addParticipant($participants[$randNum1]);
+            }
+            if ($randEvent->getParticipants()->count() === $randEvent->getMaxParticipants() - 1) {
+                $randEvent->setState($states[2]);
+            }
         }
         $manager->flush();
     }

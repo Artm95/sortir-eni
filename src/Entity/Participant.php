@@ -400,9 +400,9 @@ class Participant implements UserInterface
         if (!$phoneNumber) {
             return null;
         }
-        $formatted = str_replace(' ', '', $phoneNumber);
+        $formatted = str_replace([' ', '(0)'], '', $phoneNumber);
         if (strlen($formatted) > 10) {
-            $split = explode('33', $formatted);
+            $split = explode('+33', $formatted);
             array_slice($split, 0, 1);
             $formatted = '0'.implode('', $split);
         }
