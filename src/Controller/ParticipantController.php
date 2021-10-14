@@ -194,7 +194,7 @@ class ParticipantController extends AbstractController
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @return Response
      */
-    #[Route('/admin/users/ajout', name: 'admin_users_add')]
+    #[Route('/admin/users/new', name: 'admin_users_add')]
     public function addOne(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder): Response
     {
         $participant = new Participant();
@@ -231,7 +231,7 @@ class ParticipantController extends AbstractController
      * @return Response
      */
     #[Route(
-        path: '/admin/users/activation/{id}',
+        path: '/admin/users/activate/{id}',
         name: 'admin_users_active',
         requirements: ['id' => '\d+']
     )]
@@ -266,7 +266,7 @@ class ParticipantController extends AbstractController
      * @return Response
      */
     #[Route(
-        path: '/admin/users/supprimer/{id}',
+        path: '/admin/users/delete/{id}',
         name: 'admin_users_remove',
         requirements: ['id' => '\d+']
     )]
