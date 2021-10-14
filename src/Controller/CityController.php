@@ -96,7 +96,7 @@ class CityController extends AbstractController
         }
     }
 
-    #[Route('admin/get/cities', name: 'admin_cities_get')]
+    #[Route('get/cities', name: 'admin_cities_get')]
     public function getAllCities(CityRepository $repository, SerializerHelper $serialiserHelper)
     {
         $cities = $repository->findAll();

@@ -9,6 +9,7 @@ use App\Form\ProfileType;
 use App\Repository\CampusRepository;
 use App\Repository\ParticipantRepository;
 use App\Utils\UploaderHelper;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
@@ -203,18 +204,22 @@ class ParticipantController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $participant = $form->getData();
-            $participant->setPassword($passwordEncoder->encodePassword(
-                $participant,
-                'password123'
-            ));
-            if ($participant->getIsAdmin()) {
-                $participant->setRoles(['ROLE_ADMIN']);
+            try {
+                $participant = $form->getData();
+                $participant->setPassword($passwordEncoder->encodePassword(
+                    $participant,
+                    'password123'
+                ));
+                if ($participant->getIsAdmin()) {
+                    $participant->setRoles(['ROLE_ADMIN']);
+                }
+                $entityManager->persist($participant);
+                $entityManager->flush();
+                $this->addFlash('success', 'Utilisateur ajouté avec succés.');
+                return $this->redirectToRoute('admin_users');
+            } catch (UniqueConstraintViolationException $e) {
+                $this->addFlash('danger', 'Un utilisateur avec cet email existe déjà');
             }
-            $entityManager->persist($participant);
-            $entityManager->flush();
-            $this->addFlash('success', 'Utilisateur ajouté avec succés.');
-            return $this->redirectToRoute('admin_users');
         }
 
         return $this->render('participant/add-one.html.twig', [

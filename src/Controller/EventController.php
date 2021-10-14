@@ -119,7 +119,7 @@ class EventController extends AbstractController
         name: 'event_subscribe',
         requirements: ['id' => '\d+']
     )]
-    public function subscribeTo(int $id, EventRepository $repository, EntityManagerInterface $manager): Response
+    public function subscribeTo(int $id, Request $request, EventRepository $repository, EntityManagerInterface $manager): Response
     {
         try {
             $user = $this->getUser();
@@ -162,7 +162,8 @@ class EventController extends AbstractController
 
             $manager->flush();
             $this->addFlash('success', 'Inscription à la sortie ' . $event->getName() . ' validé.');
-            return $this->redirectToRoute('event');
+            return $this->redirect($request->headers->get('referer'));
+
         } catch (EntityNotFoundException $e) {
             return $this->addFlashAndRedirectToHome($e->getMessage());
         }
@@ -180,19 +181,19 @@ class EventController extends AbstractController
         name: 'event_unsubscribe',
         requirements: ['id' => '\d+']
     )]
-    public function unsubscribeTo(int $id, EventRepository $repository, EntityManagerInterface $manager): Response
+    public function unsubscribeTo(int $id, Request $request, EventRepository $repository, EntityManagerInterface $manager): Response
     {
         $user = $this->getUser();
         try {
             $event = $repository->findOrFail($id);
             if (!$user->getSubscribedToEvents()->contains($event)) {
                 $this->addFlash('warning', 'Vous n\'êtes pas inscrit à cette sortie.');
-                return $this->redirectToRoute('event');
+                return $this->redirect($request->headers->get('referer'));
             }
 
             if (!in_array($event->getState()->getLabel(), ['Ouverte', 'Clôturée'])) {
                 $this->addFlash('danger', 'Il est impossible de se désinscrire d\'une sortie en cours ou terminée.');
-                return $this->redirectToRoute('event');
+                return $this->redirect($request->headers->get('referer'));
             }
 
             $user->removeSubscribedToEvent($event);
@@ -206,7 +207,9 @@ class EventController extends AbstractController
             $manager->flush();
 
             $this->addFlash('success', 'Désinscription à la sortie ' . $event->getName() . ' validé.');
-            return $this->redirectToRoute('event');
+            return $this->redirect($request->headers->get('referer'));
+
+
         } catch (EntityNotFoundException $e) {
             return $this->addFlashAndRedirectToHome($e->getMessage());
         }
@@ -223,7 +226,7 @@ class EventController extends AbstractController
         name: 'event_publish',
         requirements: ['id' => '\d+']
     )]
-    public function publishEvent(int $id, EntityManagerInterface $manager): Response
+    public function publishEvent(int $id, Request $request, EntityManagerInterface $manager): Response
     {
         try {
             $eventRepository = $manager->getRepository(Event::class);
@@ -234,12 +237,14 @@ class EventController extends AbstractController
 
             if ($user->getId() !== $event->getOrganizer()->getId()) {
                 $this->addFlash('danger', 'Vous n\'êtes pas l\'organisateur de cette sortie.');
-                return $this->redirectToRoute('event');
+                return $this->redirect($request->headers->get('referer'));
+
             }
 
             if ($event->getState()->getLabel() !== 'En création') {
                 $this->addFlash('warning', 'La sortie ' . $event->getName() . ' est déjà publié.');
-                return $this->redirectToRoute('event');
+                return $this->redirect($request->headers->get('referer'));
+
             }
 
             $event->setState($openState);
@@ -282,7 +287,7 @@ class EventController extends AbstractController
             if ($state === 'Ouverte') {
                 return $this->redirectToRoute('event_subscribe', ['id' => $id]);
             } else {
-                return $this->redirectToRoute('event');
+                return $this->redirectToRoute('event_detail', ['id' => $id]);
             }
         }
 
