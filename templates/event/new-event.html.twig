@@ -6,7 +6,7 @@
 {% block body %}
 
     <h1>{{title}}</h1>
-    <div class="form" >
+    <div class="form mb-5" >
         {{ form_start(eventForm)}}
         <div class="row">
         <div class="col-sm-6">
@@ -101,6 +101,9 @@
     <style>
         #map { height: 20rem; }
         #mapAdd { height: 20rem; }
+        .suggestions-list > li {
+            cursor: pointer;
+        }
     </style>
 {% endblock %}
 {% block javascripts %}

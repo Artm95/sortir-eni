@@ -1,3 +1,20 @@
+.page-link
+{
+    background-color: #343a40!important;
+    color: #fff;
+    border: 1px solid #545b62!important;
+}
+
+.page-item.active .page-link
+{
+    background-color: #343a40!important;
+    border-color: #f8f9fa!important;
+}
+
+.page-link:hover {
+    background-color: #212427!important;
+    color: #fff!important;
+}
 
 table {
     color: white!important;

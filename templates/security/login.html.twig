@@ -3,7 +3,7 @@
 {% block title %}Connectez-vous!{% endblock %}
 
 {% block body %}
-    <div class="mt-2 d-flex justify-content-center align-items-center" style="height: 100vh">
+    <div class="mt-2 d-flex justify-content-center align-items-center" style="  position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">
         <form method="post" style="margin-top: -50px">
             {% if error %}
                 <div class="alert alert-danger mt-2">{{ error.messageKey|trans(error.messageData, 'security') }}</div>

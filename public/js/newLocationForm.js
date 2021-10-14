@@ -14,7 +14,7 @@ export default class newLocationForm {
             .catch(error => this.errors = true)
         const mapContainer = document.getElementById(containerId)
         if (this.errors) {
-            mapContainer.textContent = 'Une erreur c\'est produite lors de la récupération des villes.';
+            mapContainer.textContent = 'Une erreur s\'est produite lors de la récupération des villes.';
         } else if (!this.cities.length) {
             mapContainer.textContent = 'Aucune villes trouvée, veuillez contacter un administrateur.';
         } else {
@@ -68,7 +68,7 @@ export default class newLocationForm {
                         this.selectedSuggestions = null;
                         this.displaySuggestions();
                     })
-                    .catch(error => this.suggestionsContainer.innerHTML = 'Une erreur c\'est produite lors de la récupération des coordonnées.')
+                    .catch(error => this.suggestionsContainer.innerHTML = 'Une erreur s\'est produite lors de la récupération des coordonnées.')
             })
             if (instructionsContainer) {
                 document.getElementById(instructionsContainer).textContent = 'Vous pouvez aussi sélectionner des coordonnées GPS en déplaçant le marqueur sur la carte ou en remplissant le champ rue et sélectionnant une des suggestions qui apparaitront ci-dessous.';
