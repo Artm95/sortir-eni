@@ -50,7 +50,7 @@ class StateUpdater {
                     continue;
                 }
             }
-            if ($event->getSignUpDeadline()->format('Y-m-d') < $today) {
+            if ($event->getSignUpDeadline()->format('Y-m-d') <= $today) {
                 $event->setState($deadLine[0]);
                 $manager->persist($event);
             }
